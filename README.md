@@ -114,4 +114,9 @@ E:\tlmid\
 4. أنشئ فوجا، أضف التلاميذ (أو استوردهم CSV)، ثم ابدأ المناداة اليومية
 5. من النسخ الاحتياطي: صدّر نسخة JSON/ZIP دوريا وخزّنها خارج الحاسوب
 
+
+## 6. Mise a jour
+- Application : verification quotidienne auto + bouton Sauvegarde (donnees conservees).
+- PowerShell : double-clic Update-RegistreScolaire.bat (-Silent pour le mode silencieux).
+- Publication : compiler le Setup puis Publish-Release.ps1 -Tag vX.Y.Z (joint le Setup).
 </div>
