@@ -12,7 +12,6 @@
 **العربية / Français / English** · **Windows / PWA** · **Offline**
 
 [▶️ مشاهدة فيديو التطبيق — Registre Scolaire](./Registre%20Scolaire.mp4)
-
 ---
 
 
