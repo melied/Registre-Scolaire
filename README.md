@@ -1,5 +1,14 @@
 <div dir="rtl">
 
+## 🎥 عرض التطبيق — Application Demo
+
+فيديو توضيحي يعرّف بأهم وظائف **Registre Scolaire**، تطبيق تسيير الحضور والغياب المدرسي ثلاثي اللغات.
+
+**العربية / Français / English** · **Windows / PWA** · **Offline**
+
+[![مشاهدة فيديو التطبيق](./registre-scolaire-demo.png)](رابط-الفيديو)
+
+---
 
 ## 1. شجرة المشروع
 
