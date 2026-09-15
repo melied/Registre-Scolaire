@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="#2563eb"/>
+  <!-- Graduation cap / قبعة التخرج : المدرسة والتعليم -->
+  <polygon points="256,102 432,184 256,266 80,184" fill="#ffffff"/>
+  <rect x="196" y="208" width="120" height="72" rx="20" fill="#e8edf5"/>
+  <circle cx="256" cy="116" r="14" fill="#f59e0b"/>
+  <path d="M302 128 C352 148 362 220 346 272" fill="none" stroke="#f59e0b" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="344" cy="292" r="22" fill="#f59e0b"/>
+  <!-- Open book / الكتاب المفتوح : التلميذ والدراسة -->
+  <path d="M108 302 Q172 286 238 297 L238 432 Q172 421 108 437 Z" fill="#ffffff"/>
+  <path d="M274 297 Q340 286 404 302 L404 437 Q340 421 274 432 Z" fill="#ffffff"/>
+  <g stroke="#cbd5e1" stroke-width="10" stroke-linecap="round">
+    <line x1="132" y1="330" x2="214" y2="322"/>
+    <line x1="132" y1="358" x2="214" y2="350"/>
+    <line x1="132" y1="386" x2="214" y2="378"/>
+    <line x1="298" y1="330" x2="380" y2="322"/>
+    <line x1="298" y1="358" x2="380" y2="350"/>
+  </g>
+  <!-- Green check / علامة الصح : تسجيل الحضور -->
+  <circle cx="396" cy="398" r="78" fill="#16a34a"/>
+  <path d="M356 398 L386 428 L438 372" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

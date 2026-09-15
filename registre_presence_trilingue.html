@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Registre scolaire de présence trilingue (ar/fr/en), hors ligne. سجل مدرسي للحضور يعمل دون إنترنت. Offline trilingual attendance register.">
+<meta name="theme-color" content="#2563eb">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Registre Scolaire">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>Registre Scolaire / السجل المدرسي / School Register</title>
+<style>
+/* ============ THEME / RESET ============ */
+:root{
+  --primary:#2563eb; --primary-dark:#1d4ed8; --primary-light:#dbeafe;
+  --green:#16a34a; --green-light:#dcfce7;
+  --red:#dc2626; --red-light:#fee2e2;
+  --orange:#ea580c; --orange-light:#ffedd5;
+  --gray-50:#f8fafc; --gray-100:#f1f5f9; --gray-200:#e2e8f0; --gray-300:#cbd5e1;
+  --gray-500:#64748b; --gray-700:#334155; --gray-900:#0f172a;
+  --white:#ffffff; --radius:10px; --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 25px rgba(0,0,0,.12);
+}
+/* ============ DARK MODE ============ */
+html[data-theme="dark"]{
+  --primary-light:#1e3a8a;
+  --green-light:#14532d; --red-light:#7f1d1d; --orange-light:#7c2d12;
+  --gray-50:#0b1220; --gray-100:#0f172a; --gray-200:#334155; --gray-300:#475569;
+  --gray-500:#94a3b8; --gray-700:#e2e8f0; --gray-900:#f1f5f9;
+  --white:#1e293b; --shadow:0 1px 3px rgba(0,0,0,.4); --shadow-lg:0 10px 25px rgba(0,0,0,.5);
+}
+html[data-theme="dark"] #sidebar{background:#020617;}
+html[data-theme="dark"] .toast{background:#020617;color:#f1f5f9;}
+html[data-theme="dark"] .modal{background:#1e293b;color:var(--gray-900);}
+html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[data-theme="dark"] .field textarea,
+html[data-theme="dark"] .search-bar input,html[data-theme="dark"] .search-bar select{background:#0f172a;color:var(--gray-900);border-color:var(--gray-300);}
+html[data-theme="dark"] .pill-tabs button{background:#0f172a;color:var(--gray-900);}
+html[data-theme="dark"] .status-btns button{background:#0f172a;}
+html[data-theme="dark"] input[type="date"],html[data-theme="dark"] input[type="time"]{color-scheme:dark;}
+html[data-theme="dark"] svg text{fill:#e2e8f0 !important;}
+html[data-theme="dark"] .demo-banner{background:#7c2d12;border-color:#ea580c;color:#ffedd5;}
+.theme-btn{width:calc(100% - 24px);margin:0 12px 12px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#e2e8f0;cursor:pointer;font-size:13px;}
+.theme-btn:hover{background:rgba(255,255,255,.12);}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--gray-100);color:var(--gray-900);}
+html[dir="rtl"] body{font-family:'Segoe UI',Tahoma,'Noto Naskh Arabic',Arial,sans-serif;}
+button,input,select,textarea{font-family:inherit;font-size:14px;}
+h1,h2,h3,h4{margin:0 0 8px;}
+a{color:var(--primary);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:6px;}
+
+/* ============ LAYOUT ============ */
+#app{display:flex;min-height:100vh;}
+#sidebar{width:250px;flex:0 0 250px;background:var(--gray-900);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+#sidebar .brand{padding:18px 16px;font-weight:700;font-size:17px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px;}
+#sidebar .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--primary);flex:0 0 auto;}
+#navMenu{list-style:none;margin:0;padding:8px;flex:1;}
+#navMenu li{margin-bottom:2px;}
+#navMenu button{width:100%;text-align:start;background:none;border:none;color:#cbd5e1;padding:11px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px;transition:.15s;}
+#navMenu button:hover{background:rgba(255,255,255,.08);color:#fff;}
+#navMenu button.active{background:var(--primary);color:#fff;}
+#navMenu .ic{font-size:16px;width:20px;text-align:center;}
+.lang-switch{display:flex;gap:6px;padding:12px;border-top:1px solid rgba(255,255,255,.1);}
+.lang-switch button{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#cbd5e1;padding:7px 4px;border-radius:6px;cursor:pointer;font-size:12px;}
+.lang-switch button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+#main{flex:1;min-width:0;padding:22px 26px;}
+.page-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+.page-header h2{font-size:22px;}
+.page-sub{color:var(--gray-500);font-size:13px;margin-top:-6px;}
+
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:18px;}
+.card h3{font-size:15px;color:var(--gray-700);border-bottom:1px solid var(--gray-200);padding-bottom:8px;margin-bottom:14px;}
+
+.grid{display:grid;gap:14px;}
+.grid-2{grid-template-columns:1fr 1fr;}
+.grid-3{grid-template-columns:1fr 1fr 1fr;}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} #sidebar{width:72px;flex:0 0 72px;} #sidebar .label,#sidebar .brand span:last-child{display:none;} .lang-switch{flex-direction:column;}}
+
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.field label{font-size:12.5px;color:var(--gray-700);font-weight:600;}
+.field input,.field select,.field textarea{padding:9px 10px;border:1px solid var(--gray-300);border-radius:7px;background:#fff;color:var(--gray-900);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--primary-light);border-color:var(--primary);}
+.field-row{display:flex;gap:10px;flex-wrap:wrap;}
+.field-row>.field{flex:1;min-width:150px;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;border:1px solid transparent;background:var(--primary);color:#fff;cursor:pointer;font-weight:600;font-size:13.5px;transition:.15s;}
+.btn:hover{background:var(--primary-dark);}
+.btn.secondary{background:var(--white);color:var(--gray-700);border-color:var(--gray-300);}
+.btn.secondary:hover{background:var(--gray-100);}
+.btn.danger{background:var(--red);}
+.btn.danger:hover{background:#b91c1c;}
+.btn.success{background:var(--green);}
+.btn.success:hover{background:#15803d;}
+.btn.orange{background:var(--orange);}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:6px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{position:sticky;top:0;background:var(--gray-100);z-index:1;}
+th,td{padding:8px 9px;border:1px solid var(--gray-200);text-align:start;white-space:nowrap;}
+tbody tr:hover{background:var(--gray-50);}
+.table-wrap{overflow-x:auto;border-radius:8px;}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.badge.present{background:var(--green-light);color:var(--green);}
+.badge.absent{background:var(--red-light);color:var(--red);}
+.badge.late{background:var(--orange-light);color:var(--orange);}
+.badge.neutral{background:var(--gray-200);color:var(--gray-700);}
+
+.status-btns{display:flex;gap:5px;}
+.status-btns button{width:34px;height:30px;border-radius:6px;border:2px solid var(--gray-200);background:var(--white);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.status-btns button.p.sel{background:var(--green);border-color:var(--green);color:#fff;}
+.status-btns button.a.sel{background:var(--red);border-color:var(--red);color:#fff;}
+.status-btns button.l.sel{background:var(--orange);border-color:var(--orange);color:#fff;}
+
+.stat-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:4px;}
+.stat-card .num{font-size:26px;font-weight:800;}
+.stat-card .lbl{font-size:12.5px;color:var(--gray-500);font-weight:600;}
+.stat-card.green .num{color:var(--green);}
+.stat-card.red .num{color:var(--red);}
+.stat-card.orange .num{color:var(--orange);}
+.stat-card.blue .num{color:var(--primary);}
+
+.toast-wrap{position:fixed;bottom:18px;inset-inline-end:18px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--gray-900);color:#fff;padding:11px 16px;border-radius:8px;box-shadow:var(--shadow-lg);font-size:13.5px;animation:slidein .2s ease;}
+.toast.err{background:var(--red);}
+.toast.ok{background:var(--green);}
+@keyframes slidein{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;z-index:500;padding:16px;}
+.modal{background:#fff;border-radius:var(--radius);padding:20px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.modal h3{margin-top:0;}
+.modal.wide{max-width:760px;}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--gray-500);}
+.pill-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.pill-tabs button{padding:7px 14px;border-radius:20px;border:1px solid var(--gray-300);background:var(--white);cursor:pointer;font-size:13px;}
+.pill-tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+.search-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.search-bar input,.search-bar select{padding:8px 10px;border:1px solid var(--gray-300);border-radius:7px;}
+.search-bar input{flex:1;min-width:180px;}
+
+.demo-banner{background:var(--orange-light);border:1px solid #fdba74;color:#9a3412;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;}
+
+.cell-check{color:var(--green);font-weight:700;}
+.cell-x{color:var(--red);font-weight:700;}
+.cell-r{color:var(--orange);font-weight:700;}
+.small{font-size:12px;color:var(--gray-500);}
+.hidden{display:none !important;}
+
+/* Print */
+@media print{
+  #sidebar,.no-print,.lang-switch,.btn-row,.page-header .btn,.toast-wrap{display:none !important;}
+  #main{padding:0;}
+  #app{display:block;}
+  .card{box-shadow:none;padding:0;margin-bottom:14px;border:none;}
+  body{background:#fff;}
+  table{page-break-inside:auto;}
+  tr{page-break-inside:avoid;}
+  thead{display:table-header-group;}
+  @page{size:A4;margin:14mm;}
+  .print-landscape{}
+  #printArea{display:block !important;}
+  html[data-theme="dark"]{--white:#ffffff;--gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;--primary-light:#dbeafe;--green-light:#dcfce7;--red-light:#fee2e2;--orange-light:#ffedd5;}
+  html[data-theme="dark"] body{background:#fff;}
+  html[data-theme="dark"] svg text{fill:#0f172a !important;}
+}
+#printArea{display:none;}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand"><span class="dot"></span><span data-i18n="appName">Registre Scolaire</span></div>
+    <ul id="navMenu"></ul>
+    <div class="lang-switch">
+      <button data-lang="ar">العربية</button>
+      <button data-lang="fr">Français</button>
+      <button data-lang="en">English</button>
+    </div>
+    <button id="themeBtn" class="theme-btn no-print"></button>
+  </aside>
+  <main id="main"></main>
+</div>
+<div id="modalRoot"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+<div id="printArea"></div>
+
+<script>
+/* =========================================================================
+   TRILINGUAL ATTENDANCE REGISTER — registre_presence_trilingue.html
+   Self-contained offline app. Storage: IndexedDB (data) + localStorage (lang/settings).
+   ========================================================================= */
+
+/* ======================= 1. TRANSLATIONS ======================= */
+const I18N = {
+ar:{
+appName:"السجل المدرسي", dir:"rtl",
+nav_dashboard:"الرئيسية", nav_students:"التلاميذ", nav_groups:"الأفواج التربوية", nav_daily:"المناداة اليومية",
+nav_monthly:"السجل الشهري", nav_annual:"السجل السنوي", nav_history:"سجل الغيابات", nav_stats:"الإحصائيات",
+nav_settings:"الإعدادات", nav_backup:"النسخ الاحتياطي",
+general_info:"المعلومات العامة", f_schoolName:"اسم المؤسسة", f_schoolType:"نوع المؤسسة", f_municipality:"البلدية",
+f_province:"الولاية", f_year:"السنة الدراسية", f_teacherName:"اسم الأستاذ", f_subject:"المادة", f_grade:"المستوى الدراسي",
+f_classGroup:"الفوج التربوي", f_classroom:"القاعة", f_registerNumber:"رقم السجل",
+save:"حفظ", cancel:"إلغاء", close:"إغلاق", edit:"تعديل", delete:"حذف", duplicate:"نسخ", add:"إضافة",
+select:"اختيار", search:"بحث...", actions:"الإجراءات", confirmDelete:"هل أنت متأكد من الحذف؟", yes:"نعم", no:"لا",
+none:"لا يوجد", all:"الكل", required:"هذا الحقل إلزامي", noData:"لا توجد بيانات", saved:"تم الحفظ بنجاح",
+deleted:"تم الحذف بنجاح", updated:"تم التحديث بنجاح",
+groups_title:"إدارة الأفواج التربوية", g_name:"اسم الفوج", g_level:"المستوى", g_class:"القسم", g_teacher:"الأستاذ",
+g_subject:"المادة", g_classroom:"القاعة", g_year:"السنة الدراسية", addGroup:"إضافة فوج", noGroups:"لا توجد أفواج بعد",
+students_title:"قائمة التلاميذ", th_no:"الرقم", th_name:"اسم ولقب التلميذ", th_dob:"تاريخ الميلاد", th_repeater:"معيد",
+th_group:"الفوج", addStudent:"إضافة تلميذ", import:"استيراد", export:"تصدير", moveGroup:"نقل إلى فوج آخر",
+repeaterYes:"نعم", repeaterNo:"لا",
+daily_title:"سجل المناداة اليومي", establishment:"المؤسسة", teacher:"الأستاذ", subject:"المادة", group:"الفوج",
+year:"السنة الدراسية", date:"التاريخ", day:"اليوم", selectGroupFirst:"يرجى اختيار فوج لعرض قائمة التلاميذ",
+th_present:"حاضر", th_absent:"غائب", th_late:"متأخر", th_prevAbsence:"غياب سابق", th_excused:"مبرر الغياب",
+th_arrival:"وقت الوصول", th_reason:"السبب", th_notes:"ملاحظات",
+markAllPresent:"الكل حاضر", resetStatus:"إعادة ضبط",
+excusedQ:"هل الغياب مبرر؟", reasonLabel:"المبرر", observationLabel:"ملاحظة",
+expectedTime:"الوقت المحدد للحصة", lateDuration:"مدة التأخر", minutes:"دقيقة",
+history_title:"سجل الغيابات والتأخيرات", th_date:"التاريخ", th_student:"التلميذ", th_status:"الحالة",
+th_justified:"مبرر", th_time:"الوقت",
+student_card:"بطاقة التلميذ", presences:"الحضور", absences:"الغياب", excusedAbs:"غياب مبرر", unexcusedAbs:"غياب غير مبرر",
+lates:"التأخرات", attendanceRate:"نسبة الحضور", fullHistory:"السجل الكامل",
+monthly_title:"السجل الشهري", month:"الشهر", th_totalAbs:"الغياب", th_totalLate:"التأخر", th_presenceRate:"نسبة الحضور",
+annual_title:"السجل السنوي", th_total:"المجموع",
+dashboard_title:"لوحة القيادة", today_stats:"إحصائيات اليوم", total_students:"مجموع التلاميذ", present_today:"الحاضرون",
+absent_today:"الغائبون", justified_abs:"غياب مبرر", unjustified_abs:"غياب غير مبرر", late_today:"المتأخرون",
+month_stats:"إحصائيات الشهر", year_stats:"إحصائيات السنة", most_absent:"الأكثر غيابًا",
+print_daily:"طباعة السجل اليومي", print_monthly:"طباعة السجل الشهري", print_annual:"طباعة السجل السنوي",
+print_student:"طباعة بطاقة التلميذ", print:"طباعة",
+backup_title:"النسخ الاحتياطي", exportBackup:"تصدير نسخة احتياطية (JSON)", importBackup:"استيراد نسخة احتياطية",
+exportCsvStudents:"تصدير التلاميذ (CSV)", importCsvStudents:"استيراد تلاميذ (CSV)",
+settings_title:"الإعدادات", removeDemoData:"حذف بيانات العرض التوضيحي", demoNotice:"البيانات المعروضة حاليًا هي بيانات تجريبية للعرض التوضيحي.",
+filters:"عوامل التصفية", filterGroup:"الفوج", filterMonth:"الشهر", filterYear:"السنة", filterStatus:"الحالة",
+filterJustified:"غياب مبرر", filterUnjustified:"غياب غير مبرر",
+months:["جانفي","فيفري","مارس","أفريل","ماي","جوان","جويلية","أوت","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],
+weekdays:["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],
+demoDataDeletedMsg:"تم حذف بيانات العرض التوضيحي.", confirmDemoDelete:"سيتم حذف جميع بيانات العرض التوضيحي نهائيًا. متابعة؟",
+noHistory:"لا يوجد سجل بعد", chartTitle:"تطور الحضور", backupImported:"تم استيراد النسخة الاحتياطية بنجاح",
+name:"الاسم", dobLabel:"تاريخ الميلاد", repeaterLabel:"معيد", groupLabel:"الفوج",
+confirmCloseModal:"إغلاق", schoolTypePlaceholder:"مثال: ابتدائية / متوسطة / ثانوية",
+sortBy:"ترتيب حسب", sortNumber:"الرقم", sortName:"الاسم", sortDob:"تاريخ الميلاد",
+selectGroupBtn:"اختيار", defaultClassTime:"الوقت الافتراضي للحصة", studentSearchPh:"بحث باسم التلميذ...",
+selectedGroup:"مختار", totalRow:"المجموع", globalSearchPh:"بحث شامل (اسم، فوج، تاريخ)...",
+pwaTitle:"تثبيت كتطبيق هاتف", pwaDesc:"ثبّت السجل على هاتفك أو حاسوبك للوصول السريع والعمل دون إنترنت.",
+installApp:"تثبيت التطبيق", pwaInstalled:"التطبيق مثبّت ويعمل دون إنترنت.",
+pwaNotEligible:"المتصفح لا يدعم التثبيت التلقائي. استعمل قائمة المتصفح: إضافة إلى الشاشة الرئيسية.",
+pwaIosHelp:"على iPhone: زر المشاركة ← إضافة إلى الشاشة الرئيسية.",
+pwaOfflineNote:"ملاحظة: ملف HTML وحده يعمل دون إنترنت. التثبيت PWA يحتاج فتح الصفحة عبر http أو https مرة واحدة (وليس file://).",
+darkMode:"الوضع الليلي", lightMode:"الوضع النهاري",
+autoBackup:"النسخ الاحتياطي التلقائي", autoBackupDesc:"حفظ لقطات داخلية تلقائياً لتفادي ضياع البيانات.", autoEvery:"الفاصل (بالأيام)", autoOn:"مفعّل", autoOff:"معطّل",
+backupNow:"نسخ احتياطي الآن", lastAuto:"آخر نسخ تلقائي", never:"لم يتم بعد", snapshotsTitle:"اللقطات المحفوظة", restore:"استعادة",
+snapRestored:"تمت الاستعادة بنجاح", snapDeleted:"تم حذف اللقطة", snapSaved:"تم حفظ اللقطة", noSnapshots:"لا توجد لقطات بعد",
+zipBackup:"تصدير ZIP", zipDesc:"ملف واحد يجمع نسخة JSON وقائمة CSV.",
+pwTitle:"كلمة المرور", pwDesc:"قفل الإعدادات وعمليات الحذف بكلمة مرور محلية على هذا الجهاز.", pwNew:"كلمة مرور جديدة", pwConfirm:"تأكيد كلمة المرور",
+pwCurrent:"كلمة المرور الحالية", pwSet:"تعيين", pwChange:"تغيير", pwRemove:"إزالة كلمة المرور", pwEnter:"أدخل كلمة المرور للمتابعة", pwUnlock:"فتح",
+pwWrong:"كلمة مرور خاطئة", pwMismatch:"كلمتا المرور غير متطابقتين", pwSaved:"تم حفظ كلمة المرور", pwRemoved:"تمت إزالة كلمة المرور", lockedTitle:"الإعدادات مقفلة",
+alertTitle:"تنبيه الغيابات المتكررة", alertThreshold:"عتبة الغيابات غير المبررة", watchList:"تلاميذ يستحقون المتابعة", noAlert:"لا يوجد تلميذ فوق العتبة حالياً",
+timetable:"جدول الحصص الأسبوعي", groupDefaultTime:"الوقت الافتراضي للفوج", leaveEmpty:"فارغ = القيمة الافتراضية",
+dayNote:"ملاحظة اليوم (الفوج)", dayNotePh:"اكتب ملاحظة حول حصة اليوم...",
+rateCurve:"منحنى نسبة الحضور", last12weeks:"آخر 12 أسبوعاً",
+blankSheet:"ورقة فارغة للتوقيع", printBlank:"طباعة ورقة فارغة", signature:"التوقيع",
+dbBlockedTitle:"نافذة أخرى مفتوحة", dbBlockedText:"يبدو أن التطبيق مفتوح في نافذة أو تبويب آخر. أغلق النوافذ الأخرى وسيعمل هذا التطبيق تلقائياً، أو أعد التحميل.",
+dbErrorTitle:"تعذر فتح قاعدة البيانات", dbErrorText:"حدث خطأ أثناء فتح البيانات المحلية. أعد تشغيل المتصفح وحاول مجدداً.",
+retryBtn:"إعادة التحميل",
+datePh:"DD/MM/YYYY", invalidDate:"تاريخ غير صالح (مثال: 12/02/2026)", invalidTime:"وقت غير صالح (مثال: 08:00)",
+},
+fr:{
+appName:"Registre Scolaire", dir:"ltr",
+nav_dashboard:"Tableau de bord", nav_students:"Élèves", nav_groups:"Groupes pédagogiques", nav_daily:"Appel quotidien",
+nav_monthly:"Registre mensuel", nav_annual:"Registre annuel", nav_history:"Historique des absences", nav_stats:"Statistiques",
+nav_settings:"Paramètres", nav_backup:"Sauvegarde",
+general_info:"Informations générales", f_schoolName:"Nom de l'établissement", f_schoolType:"Type d'établissement",
+f_municipality:"Commune", f_province:"Wilaya", f_year:"Année scolaire", f_teacherName:"Nom de l'enseignant",
+f_subject:"Matière", f_grade:"Niveau scolaire", f_classGroup:"Groupe pédagogique", f_classroom:"Salle",
+f_registerNumber:"Numéro du registre",
+save:"Enregistrer", cancel:"Annuler", close:"Fermer", edit:"Modifier", delete:"Supprimer", duplicate:"Dupliquer",
+add:"Ajouter", select:"Sélectionner", search:"Rechercher...", actions:"Actions", confirmDelete:"Confirmer la suppression ?",
+yes:"Oui", no:"Non", none:"Aucun", all:"Tous", required:"Ce champ est obligatoire", noData:"Aucune donnée",
+saved:"Enregistré avec succès", deleted:"Supprimé avec succès", updated:"Mis à jour avec succès",
+groups_title:"Gestion des groupes pédagogiques", g_name:"Nom du groupe", g_level:"Niveau", g_class:"Classe",
+g_teacher:"Enseignant", g_subject:"Matière", g_classroom:"Salle", g_year:"Année scolaire", addGroup:"Ajouter un groupe",
+noGroups:"Aucun groupe pour le moment",
+students_title:"Liste des élèves", th_no:"N°", th_name:"Nom et prénom", th_dob:"Date de naissance",
+th_repeater:"Redoublant", th_group:"Groupe", addStudent:"Ajouter un élève", import:"Importer", export:"Exporter",
+moveGroup:"Déplacer vers un autre groupe", repeaterYes:"Oui", repeaterNo:"Non",
+daily_title:"Registre quotidien de présence", establishment:"Établissement", teacher:"Enseignant", subject:"Matière",
+group:"Groupe", year:"Année scolaire", date:"Date", day:"Jour", selectGroupFirst:"Veuillez sélectionner un groupe pour afficher les élèves",
+th_present:"Présent", th_absent:"Absent", th_late:"Retard", th_prevAbsence:"Absence antérieure",
+th_excused:"Absence justifiée", th_arrival:"Heure d'arrivée", th_reason:"Motif", th_notes:"Observations",
+markAllPresent:"Tout présent", resetStatus:"Réinitialiser",
+excusedQ:"Absence justifiée ?", reasonLabel:"Motif", observationLabel:"Observation",
+expectedTime:"Heure prévue du cours", lateDuration:"Durée du retard", minutes:"min",
+history_title:"Historique des absences et retards", th_date:"Date", th_student:"Élève", th_status:"Statut",
+th_justified:"Justifiée", th_time:"Heure",
+student_card:"Fiche individuelle", presences:"Présences", absences:"Absences", excusedAbs:"Absences justifiées",
+unexcusedAbs:"Absences non justifiées", lates:"Retards", attendanceRate:"Taux de présence", fullHistory:"Historique complet",
+monthly_title:"Registre mensuel", month:"Mois", th_totalAbs:"Absences", th_totalLate:"Retards", th_presenceRate:"Présence",
+annual_title:"Registre annuel", th_total:"Total",
+dashboard_title:"Tableau de bord", today_stats:"Statistiques du jour", total_students:"Total élèves",
+present_today:"Présents", absent_today:"Absents", justified_abs:"Absences justifiées", unjustified_abs:"Absences non justifiées",
+late_today:"Retards", month_stats:"Statistiques mensuelles", year_stats:"Statistiques annuelles",
+most_absent:"Élèves les plus absents",
+print_daily:"Imprimer le registre quotidien", print_monthly:"Imprimer le registre mensuel",
+print_annual:"Imprimer le registre annuel", print_student:"Imprimer la fiche élève", print:"Imprimer",
+backup_title:"Sauvegarde et restauration", exportBackup:"Exporter une sauvegarde (JSON)", importBackup:"Importer une sauvegarde",
+exportCsvStudents:"Exporter les élèves (CSV)", importCsvStudents:"Importer des élèves (CSV)",
+settings_title:"Paramètres", removeDemoData:"Supprimer les données de démonstration",
+demoNotice:"Les données affichées sont actuellement des données de démonstration.",
+filters:"Filtres", filterGroup:"Groupe", filterMonth:"Mois", filterYear:"Année", filterStatus:"Statut",
+filterJustified:"Absence justifiée", filterUnjustified:"Absence non justifiée",
+months:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],
+weekdays:["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"],
+demoDataDeletedMsg:"Les données de démonstration ont été supprimées.",
+confirmDemoDelete:"Toutes les données de démonstration seront supprimées définitivement. Continuer ?",
+noHistory:"Aucun historique pour le moment", chartTitle:"Évolution de la présence",
+backupImported:"Sauvegarde importée avec succès",
+name:"Nom", dobLabel:"Date de naissance", repeaterLabel:"Redoublant", groupLabel:"Groupe",
+confirmCloseModal:"Fermer", schoolTypePlaceholder:"ex : Primaire / Collège / Lycée",
+sortBy:"Trier par", sortNumber:"Numéro", sortName:"Nom", sortDob:"Date de naissance",
+selectGroupBtn:"Sélectionner", defaultClassTime:"Heure de cours par défaut", studentSearchPh:"Rechercher un élève par nom...",
+selectedGroup:"Sélectionné", totalRow:"Total", globalSearchPh:"Recherche globale (nom, groupe, date)...",
+pwaTitle:"Installer comme application", pwaDesc:"Installez le registre sur votre téléphone ou PC pour un accès rapide et 100% hors ligne.",
+installApp:"Installer l'application", pwaInstalled:"Application installée, fonctionnelle hors ligne.",
+pwaNotEligible:"Installation auto non proposée par ce navigateur. Utilisez le menu : Ajouter à l'écran d'accueil.",
+pwaIosHelp:"Sur iPhone : bouton Partager ← Ajouter à l'écran d'accueil.",
+pwaOfflineNote:"Note : le fichier HTML seul fonctionne hors ligne. L'installation PWA nécessite une ouverture via http(s) une fois (pas file://).",
+darkMode:"Mode sombre", lightMode:"Mode clair",
+autoBackup:"Sauvegarde automatique", autoBackupDesc:"Enregistre des copies internes automatiquement contre la perte de données.", autoEvery:"Intervalle (jours)", autoOn:"Activée", autoOff:"Désactivée",
+backupNow:"Sauvegarder maintenant", lastAuto:"Dernière auto-sauvegarde", never:"Jamais", snapshotsTitle:"Copies internes", restore:"Restaurer",
+snapRestored:"Restauration effectuée", snapDeleted:"Copie supprimée", snapSaved:"Copie enregistrée", noSnapshots:"Aucune copie pour le moment",
+zipBackup:"Exporter ZIP", zipDesc:"Un seul fichier avec la sauvegarde JSON et la liste CSV.",
+pwTitle:"Mot de passe", pwDesc:"Verrouille les paramètres et les suppressions avec un mot de passe local sur cet appareil.", pwNew:"Nouveau mot de passe", pwConfirm:"Confirmer le mot de passe",
+pwCurrent:"Mot de passe actuel", pwSet:"Définir", pwChange:"Changer", pwRemove:"Supprimer le mot de passe", pwEnter:"Entrez le mot de passe pour continuer", pwUnlock:"Déverrouiller",
+pwWrong:"Mot de passe incorrect", pwMismatch:"Les mots de passe ne correspondent pas", pwSaved:"Mot de passe enregistré", pwRemoved:"Mot de passe supprimé", lockedTitle:"Paramètres verrouillés",
+alertTitle:"Alerte d'absences répétées", alertThreshold:"Seuil d'absences non justifiées", watchList:"Élèves à suivre", noAlert:"Aucun élève au-dessus du seuil",
+timetable:"Emploi du temps hebdomadaire", groupDefaultTime:"Heure par défaut du groupe", leaveEmpty:"Vide = valeur par défaut",
+dayNote:"Note du jour (groupe)", dayNotePh:"Note sur la séance du jour...",
+rateCurve:"Courbe du taux de présence", last12weeks:"12 dernières semaines",
+blankSheet:"Feuille vierge à signer", printBlank:"Imprimer une feuille vierge", signature:"Signature",
+dbBlockedTitle:"Une autre fenêtre est ouverte", dbBlockedText:"L'application semble ouverte dans une autre fenêtre ou un autre onglet. Fermez les autres fenêtres et cette page se chargera automatiquement, ou rechargez-la.",
+dbErrorTitle:"Base de données inaccessible", dbErrorText:"Erreur d'ouverture des données locales. Redémarrez le navigateur et réessayez.",
+retryBtn:"Recharger",
+datePh:"JJ/MM/AAAA", invalidDate:"Date invalide (ex : 12/02/2026)", invalidTime:"Heure invalide (ex : 08:00)",
+},
+en:{
+appName:"School Register", dir:"ltr",
+nav_dashboard:"Dashboard", nav_students:"Students", nav_groups:"Groups", nav_daily:"Daily Attendance",
+nav_monthly:"Monthly Register", nav_annual:"Annual Register", nav_history:"Absence Records", nav_stats:"Statistics",
+nav_settings:"Settings", nav_backup:"Backup",
+general_info:"General Information", f_schoolName:"School name", f_schoolType:"School type", f_municipality:"Municipality",
+f_province:"Province / Wilaya", f_year:"School year", f_teacherName:"Teacher name", f_subject:"Subject",
+f_grade:"Grade level", f_classGroup:"Class group", f_classroom:"Classroom", f_registerNumber:"Register number",
+save:"Save", cancel:"Cancel", close:"Close", edit:"Edit", delete:"Delete", duplicate:"Duplicate", add:"Add",
+select:"Select", search:"Search...", actions:"Actions", confirmDelete:"Confirm deletion?", yes:"Yes", no:"No",
+none:"None", all:"All", required:"This field is required", noData:"No data", saved:"Saved successfully",
+deleted:"Deleted successfully", updated:"Updated successfully",
+groups_title:"Group Management", g_name:"Group name", g_level:"Level", g_class:"Class", g_teacher:"Teacher",
+g_subject:"Subject", g_classroom:"Classroom", g_year:"School year", addGroup:"Add group", noGroups:"No groups yet",
+students_title:"Student List", th_no:"No.", th_name:"Student name", th_dob:"Date of birth", th_repeater:"Repeater",
+th_group:"Group", addStudent:"Add student", import:"Import", export:"Export", moveGroup:"Move to another group",
+repeaterYes:"Yes", repeaterNo:"No",
+daily_title:"Daily Attendance Register", establishment:"School", teacher:"Teacher", subject:"Subject", group:"Group",
+year:"School year", date:"Date", day:"Day", selectGroupFirst:"Please select a group to display students",
+th_present:"Present", th_absent:"Absent", th_late:"Late", th_prevAbsence:"Previous absence", th_excused:"Excused absence",
+th_arrival:"Arrival time", th_reason:"Reason", th_notes:"Notes",
+markAllPresent:"Mark all present", resetStatus:"Reset",
+excusedQ:"Excused absence?", reasonLabel:"Reason", observationLabel:"Observation",
+expectedTime:"Expected class time", lateDuration:"Late duration", minutes:"min",
+history_title:"Absence and Late Records", th_date:"Date", th_student:"Student", th_status:"Status",
+th_justified:"Justified", th_time:"Time",
+student_card:"Student Record", presences:"Presences", absences:"Absences", excusedAbs:"Excused absences",
+unexcusedAbs:"Unexcused absences", lates:"Lates", attendanceRate:"Attendance rate", fullHistory:"Full history",
+monthly_title:"Monthly Register", month:"Month", th_totalAbs:"Absences", th_totalLate:"Lates", th_presenceRate:"Attendance",
+annual_title:"Annual Register", th_total:"Total",
+dashboard_title:"Dashboard", today_stats:"Today's statistics", total_students:"Total students", present_today:"Present",
+absent_today:"Absent", justified_abs:"Excused absences", unjustified_abs:"Unexcused absences", late_today:"Late",
+month_stats:"Monthly statistics", year_stats:"Annual statistics", most_absent:"Most absent students",
+print_daily:"Print daily register", print_monthly:"Print monthly register", print_annual:"Print annual register",
+print_student:"Print student record", print:"Print",
+backup_title:"Backup and Restore", exportBackup:"Export backup (JSON)", importBackup:"Import backup",
+exportCsvStudents:"Export students (CSV)", importCsvStudents:"Import students (CSV)",
+settings_title:"Settings", removeDemoData:"Remove demo data", demoNotice:"The data currently shown is demo data.",
+filters:"Filters", filterGroup:"Group", filterMonth:"Month", filterYear:"Year", filterStatus:"Status",
+filterJustified:"Excused absence", filterUnjustified:"Unexcused absence",
+months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+weekdays:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+demoDataDeletedMsg:"Demo data has been deleted.",
+confirmDemoDelete:"All demo data will be permanently deleted. Continue?",
+noHistory:"No history yet", chartTitle:"Attendance trend", backupImported:"Backup imported successfully",
+name:"Name", dobLabel:"Date of birth", repeaterLabel:"Repeater", groupLabel:"Group",
+confirmCloseModal:"Close", schoolTypePlaceholder:"e.g. Primary / Middle / High school",
+sortBy:"Sort by", sortNumber:"Number", sortName:"Name", sortDob:"Date of birth",
+selectGroupBtn:"Select", defaultClassTime:"Default class time", studentSearchPh:"Search student by name...",
+selectedGroup:"Selected", totalRow:"Total", globalSearchPh:"Global search (name, group, date)...",
+pwaTitle:"Install as app", pwaDesc:"Install the register on your phone or PC for fast access and 100% offline use.",
+installApp:"Install app", pwaInstalled:"App installed and working offline.",
+pwaNotEligible:"Auto-install not offered by this browser. Use menu: Add to Home screen.",
+pwaIosHelp:"On iPhone: Share button ← Add to Home Screen.",
+pwaOfflineNote:"Note: the single HTML file already works offline. PWA install needs one http(s) opening (not file://).",
+darkMode:"Dark mode", lightMode:"Light mode",
+autoBackup:"Automatic backup", autoBackupDesc:"Saves internal snapshots automatically against data loss.", autoEvery:"Interval (days)", autoOn:"On", autoOff:"Off",
+backupNow:"Back up now", lastAuto:"Last auto backup", never:"Never", snapshotsTitle:"Internal snapshots", restore:"Restore",
+snapRestored:"Restore completed", snapDeleted:"Snapshot deleted", snapSaved:"Snapshot saved", noSnapshots:"No snapshots yet",
+zipBackup:"Export ZIP", zipDesc:"One file with the JSON backup and the CSV list.",
+pwTitle:"Password", pwDesc:"Locks settings and deletions with a local password on this device.", pwNew:"New password", pwConfirm:"Confirm password",
+pwCurrent:"Current password", pwSet:"Set", pwChange:"Change", pwRemove:"Remove password", pwEnter:"Enter the password to continue", pwUnlock:"Unlock",
+pwWrong:"Wrong password", pwMismatch:"Passwords do not match", pwSaved:"Password saved", pwRemoved:"Password removed", lockedTitle:"Settings locked",
+alertTitle:"Repeated absence alert", alertThreshold:"Unexcused absence threshold", watchList:"Students to watch", noAlert:"No student above the threshold",
+timetable:"Weekly class schedule", groupDefaultTime:"Group default time", leaveEmpty:"Empty = default value",
+dayNote:"Day note (group)", dayNotePh:"Note about today's session...",
+rateCurve:"Attendance rate curve", last12weeks:"Last 12 weeks",
+blankSheet:"Blank sign sheet", printBlank:"Print blank sheet", signature:"Signature",
+dbBlockedTitle:"Another window is open", dbBlockedText:"The app seems open in another window or tab. Close the other windows and this page will load automatically, or reload it.",
+dbErrorTitle:"Database unavailable", dbErrorText:"Error opening local data. Restart the browser and try again.",
+retryBtn:"Reload",
+datePh:"MM/DD/YYYY", invalidDate:"Invalid date (e.g. 02/12/2026)", invalidTime:"Invalid time (e.g. 08:00)",
+}
+};
+
+var LANG = localStorage.getItem('rpt_lang') || 'fr';
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) !== undefined ? I18N[LANG][key] : key; }
+
+/* ======================= 2. INDEXEDDB LAYER ======================= */
+const DB_NAME='rpt_db', DB_VERSION=2;
+var DB=null;
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    let req;
+    try{ req = indexedDB.open(DB_NAME, DB_VERSION); }
+    catch(e){ reject(e); return; }
+    req.onupgradeneeded = (e)=>{
+      const db = e.target.result;
+      if(!db.objectStoreNames.contains('groups')) db.createObjectStore('groups',{keyPath:'id'});
+      if(!db.objectStoreNames.contains('students')) db.createObjectStore('students',{keyPath:'id'});
+      if(!db.objectStoreNames.contains('attendance')) db.createObjectStore('attendance',{keyPath:'id'});
+      if(!db.objectStoreNames.contains('meta')) db.createObjectStore('meta',{keyPath:'key'});
+      if(!db.objectStoreNames.contains('snapshots')) db.createObjectStore('snapshots',{keyPath:'id'});
+    };
+    req.onsuccess = (e)=>{
+      DB=e.target.result;
+      try{ DB.onversionchange=()=>{ try{DB.close();}catch(_){} }; }catch(_){}
+      resolve(DB);
+    };
+    req.onerror = (e)=>{ try{reject((req&&req.error)||new Error('IDB open failed'));}catch(err){reject(err);} };
+    req.onblocked = ()=>{ try{ showDbBlockedNotice(); }catch(_){} };
+  });
+}
+function showDbBlockedNotice(){
+  try{
+    const main=document.getElementById('main');
+    if(main && !main.innerHTML){
+      main.innerHTML=`<div class="card" style="max-width:580px;"><h3>⏳ ${t('dbBlockedTitle')}</h3><p class="small">${t('dbBlockedText')}</p><div class="btn-row"><button class="btn" onclick="location.reload()">${t('retryBtn')}</button></div></div>`;
+    }
+  }catch(_){}
+}
+function renderFatalDbError(err){
+  try{
+    const main=document.getElementById('main');
+    const det=(err&&(err.message||err.name))?(' ('+(err.message||err.name)+')'):'';
+    if(main) main.innerHTML=`<div class="card" style="max-width:580px;"><h3>⚠️ ${t('dbErrorTitle')}</h3><p class="small">${t('dbErrorText')}${escapeHtml(det)}</p><div class="btn-row"><button class="btn" onclick="location.reload()">${t('retryBtn')}</button></div></div>`;
+  }catch(_){}
+}
+function txStore(name, mode='readonly'){ return DB.transaction(name, mode).objectStore(name); }
+function idbGetAll(store){ return new Promise((res,rej)=>{ const r=txStore(store).getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=rej; }); }
+function idbPut(store, obj){
+  if(!(store==='meta'&&obj&&typeof obj.key==='string'&&obj.key.indexOf('_sys')===0)){ try{dataChanged();}catch(e){} }
+  return new Promise((res,rej)=>{ const r=txStore(store,'readwrite').put(obj); r.onsuccess=()=>res(obj); r.onerror=rej; });
+}
+function idbPutRaw(store, obj){ return new Promise((res,rej)=>{ const r=txStore(store,'readwrite').put(obj); r.onsuccess=()=>res(obj); r.onerror=rej; }); }
+function idbDelete(store, id){ return new Promise((res,rej)=>{ const r=txStore(store,'readwrite').delete(id); r.onsuccess=()=>res(); r.onerror=rej; }); }
+function idbGet(store, id){ return new Promise((res,rej)=>{ const r=txStore(store).get(id); r.onsuccess=()=>res(r.result); r.onerror=rej; }); }
+function idbClear(store){ return new Promise((res,rej)=>{ const r=txStore(store,'readwrite').clear(); r.onsuccess=()=>res(); r.onerror=rej; }); }
+function uid(){ return 'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8); }
+
+/* ======================= 3. IN-MEMORY STATE ======================= */
+var STATE = {
+  view:'dashboard',
+  groups:[], students:[], attendance:[], meta:{},
+  dailyDate: new Date().toISOString().slice(0,10),
+  dailyGroupId: null,
+  monthlyGroupId:null, monthlyMonth:(new Date().getMonth()+1), monthlyYear:(new Date().getFullYear()),
+  annualGroupId:null, annualYear:(new Date().getFullYear()),
+  historyFilters:{group:'',status:'',justified:'',month:'',year:'',name:''},
+  studentsSearch:'', studentsSort:'number', studentsGroupFilter:'',
+  groupsSearch:'',
+};
+
+async function loadAll(){
+  STATE.groups = await idbGetAll('groups');
+  STATE.students = await idbGetAll('students');
+  STATE.attendance = await idbGetAll('attendance');
+  const metaArr = await idbGetAll('meta');
+  STATE.meta = {}; metaArr.forEach(m=>STATE.meta[m.key]=m.value);
+}
+async function saveMeta(key,value){ STATE.meta[key]=value; await idbPut('meta',{key,value}); }
+
+/* ======================= 4. TOASTS / MODAL ======================= */
+function toast(msg, type=''){
+  const wrap=document.getElementById('toastWrap');
+  const el=document.createElement('div'); el.className='toast '+type; el.textContent=msg;
+  wrap.appendChild(el); setTimeout(()=>el.remove(),3200);
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
+function openModal(html, wide=false){
+  document.getElementById('modalRoot').innerHTML =
+    `<div class="modal-overlay" id="modalOverlay"><div class="modal ${wide?'wide':''}">${html}</div></div>`;
+  document.getElementById('modalOverlay').addEventListener('click',(e)=>{ if(e.target.id==='modalOverlay') closeModal(); });
+}
+function confirmAction(msg, onYes, needPw){
+  if(needPw && isLocked()){ askPassword(ok=>{ if(ok) confirmAction(msg, onYes, false); }); return; }
+  openModal(`
+    <h3>${t('confirmDelete')==msg?t('confirmDelete'):msg}</h3>
+    <div class="btn-row">
+      <button class="btn danger" id="confirmYesBtn">${t('yes')}</button>
+      <button class="btn secondary" id="confirmNoBtn">${t('cancel')}</button>
+    </div>`);
+  document.getElementById('confirmYesBtn').onclick = ()=>{ closeModal(); onYes(); };
+  document.getElementById('confirmNoBtn').onclick = closeModal;
+}
+
+/* ======================= 5. NAV / RENDER ROUTER ======================= */
+const NAV_ITEMS = [
+  {id:'dashboard', icon:'🏠', key:'nav_dashboard'},
+  {id:'students', icon:'🧑‍🎓', key:'nav_students'},
+  {id:'groups', icon:'👥', key:'nav_groups'},
+  {id:'daily', icon:'📋', key:'nav_daily'},
+  {id:'monthly', icon:'📆', key:'nav_monthly'},
+  {id:'annual', icon:'🗓️', key:'nav_annual'},
+  {id:'history', icon:'📑', key:'nav_history'},
+  {id:'stats', icon:'📊', key:'nav_stats'},
+  {id:'settings', icon:'⚙️', key:'nav_settings'},
+  {id:'backup', icon:'💾', key:'nav_backup'},
+];
+
+function renderSidebar(){
+  document.getElementById('navMenu').innerHTML = NAV_ITEMS.map(it=>`
+    <li><button data-view="${it.id}" class="${STATE.view===it.id?'active':''}">
+      <span class="ic">${it.icon}</span><span class="label">${t(it.key)}</span>
+    </button></li>`).join('');
+  document.querySelectorAll('#navMenu button').forEach(b=>{
+    b.addEventListener('click', ()=>{ STATE.view=b.dataset.view; renderApp(); });
+  });
+  document.querySelectorAll('.lang-switch button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang===LANG);
+    b.onclick = ()=>setLang(b.dataset.lang);
+  });
+  const thBtn=document.getElementById('themeBtn');
+  if(thBtn){
+    const isDark=document.documentElement.dataset.theme==='dark';
+    thBtn.textContent=(isDark?'☀️ '+t('lightMode'):'🌙 '+t('darkMode'));
+    thBtn.onclick=()=>{
+      const nd=document.documentElement.dataset.theme==='dark'?'light':'dark';
+      document.documentElement.dataset.theme=nd;
+      try{localStorage.setItem('rpt_theme',nd);}catch(e){}
+      renderApp();
+    };
+  }
+  document.querySelector('.brand span:last-child').textContent = t('appName');
+  document.title = t('appName');
+}
+
+function setLang(lang){
+  LANG = lang;
+  localStorage.setItem('rpt_lang', lang);
+  document.documentElement.lang = lang;
+  document.documentElement.dir = I18N[lang].dir;
+  renderApp();
+}
+
+function renderApp(){
+  renderSidebar();
+  const main = document.getElementById('main');
+  switch(STATE.view){
+    case 'dashboard': main.innerHTML = viewDashboard(); afterDashboard(); break;
+    case 'students': main.innerHTML = viewStudents(); afterStudents(); break;
+    case 'groups': main.innerHTML = viewGroups(); afterGroups(); break;
+    case 'daily': main.innerHTML = viewDaily(); afterDaily(); break;
+    case 'monthly': main.innerHTML = viewMonthly(); afterMonthly(); break;
+    case 'annual': main.innerHTML = viewAnnual(); afterAnnual(); break;
+    case 'history': main.innerHTML = viewHistory(); afterHistory(); break;
+    case 'stats': main.innerHTML = viewStats(); afterStats(); break;
+    case 'settings': if(isLocked()){ main.innerHTML = viewLock(); afterLock(); } else { main.innerHTML = viewSettings(); afterSettings(); } break;
+    case 'backup': main.innerHTML = viewBackup(); afterBackup(); break;
+    default: main.innerHTML = '';
+  }
+}
+
+function demoBanner(){
+  if(!STATE.meta.isDemo) return '';
+  return `<div class="demo-banner"><span>⚠️ ${t('demoNotice')}</span>
+    <button class="btn sm orange no-print" id="demoBannerBtn">${t('removeDemoData')}</button></div>`;
+}
+function bindDemoBanner(){
+  const b=document.getElementById('demoBannerBtn');
+  if(b) b.onclick=()=>{
+    confirmAction(t('confirmDemoDelete'), async ()=>{
+      try{ await takeSnapshot(); }catch(e){}
+      await idbClear('groups'); await idbClear('students'); await idbClear('attendance');
+      await saveMeta('isDemo', false);
+      await loadAll();
+      toast(t('demoDataDeletedMsg'),'ok');
+      renderApp();
+    }, true);
+  };
+}
+
+/* ======================= 6. HELPERS ======================= */
+function fmtDate(isoDate){
+  if(!isoDate) return '';
+  const [y,m,d] = isoDate.split('-');
+  if(LANG==='fr') return `${d}/${m}/${y}`;
+  if(LANG==='en') return `${m}/${d}/${y}`;
+  return `${d}/${m}/${y}`; // ar
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+// Convertit les chiffres arabes orientaux (٠١٢٣٤٥٦٧٨٩ / ۰۱۲۳۴۵۶۷۸۹) en chiffres latins.
+// Toutes les dates/heures/nombres s'affichent et se saisissent en chiffres latins (12/02/2026),
+// même quand l'interface est en arabe.
+function toLatinDigits(str){
+  return String(str||'').replace(/[٠-٩]/g, c=>String(c.charCodeAt(0)-0x0660)).replace(/[۰-۹]/g, c=>String(c.charCodeAt(0)-0x06F0));
+}
+function isoToDMY(iso){
+  if(!iso) return '';
+  const p=String(iso).split('-');
+  return (p.length===3)? `${p[2]}/${p[1]}/${p[0]}` : '';
+}
+// Format d'affichage dans les champs de saisie : MM/DD/YYYY en anglais, DD/MM/YYYY sinon.
+function isoToInput(iso){
+  if(!iso) return '';
+  const p=String(iso).split('-');
+  if(p.length!==3) return '';
+  if(typeof LANG!=='undefined' && LANG==='en') return `${p[1]}/${p[2]}/${p[0]}`;
+  return `${p[2]}/${p[1]}/${p[0]}`;
+}
+// Analyse une date saisie : DD/MM/YYYY (ar/fr) ou MM/DD/YYYY (en). Retourne ISO ou null.
+function parseDateInput(str){
+  const s=toLatinDigits(str).trim();
+  const m=s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/);
+  if(!m) return null;
+  let d,mo;
+  if(typeof LANG!=='undefined' && LANG==='en'){ mo=+m[1]; d=+m[2]; }
+  else { d=+m[1]; mo=+m[2]; }
+  const y=+m[3];
+  if(mo<1||mo>12||d<1||d>31||y<1900||y>2100) return null;
+  const dt=new Date(y,mo-1,d);
+  if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d) return null;
+  return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function validTimeStr(str){
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(toLatinDigits(str).trim());
+}
+function groupById(id){ return STATE.groups.find(g=>g.id===id); }
+function studentById(id){ return STATE.students.find(s=>s.id===id); }
+function studentsOfGroup(gid){ return STATE.students.filter(s=>s.groupId===gid); }
+function groupName(g){ return g? g.name : t('none'); }
+function dayName(isoDate){
+  const d = new Date(isoDate+'T00:00:00');
+  return t('weekdays')[d.getDay()];
+}
+function escapeHtml(str){
+  return (str||'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function attForStudentDate(studentId, date){
+  return STATE.attendance.find(a=>a.studentId===studentId && a.date===date);
+}
+function attListForGroupDate(groupId, date){
+  return STATE.attendance.filter(a=>a.groupId===groupId && a.date===date);
+}
+async function upsertAttendance(rec){
+  let existing = STATE.attendance.find(a=>a.studentId===rec.studentId && a.date===rec.date);
+  if(existing){
+    Object.assign(existing, rec);
+    await idbPut('attendance', existing);
+  } else {
+    rec.id = uid();
+    STATE.attendance.push(rec);
+    await idbPut('attendance', rec);
+  }
+}
+async function removeAttendance(studentId,date){
+  const existing = STATE.attendance.find(a=>a.studentId===studentId && a.date===date);
+  if(existing){
+    STATE.attendance = STATE.attendance.filter(a=>a.id!==existing.id);
+    await idbDelete('attendance', existing.id);
+  }
+}
+function computeStudentStats(studentId, filterFn){
+  const recs = STATE.attendance.filter(a=>a.studentId===studentId && (filterFn? filterFn(a): true));
+  const presences = recs.filter(r=>r.status==='present').length;
+  const absences = recs.filter(r=>r.status==='absent').length;
+  const excused = recs.filter(r=>r.status==='absent' && r.justified===true).length;
+  const unexcused = recs.filter(r=>r.status==='absent' && r.justified!==true).length;
+  const lates = recs.filter(r=>r.status==='late').length;
+  const total = recs.length;
+  const rate = total? Math.round((presences/total)*100) : 100;
+  return {presences,absences,excused,unexcused,lates,total,rate,recs};
+}
+function computeLateDuration(arrival, expected){
+  if(!arrival || !expected) return null;
+  const [ah,am] = arrival.split(':').map(Number);
+  const [eh,em] = expected.split(':').map(Number);
+  const diff = (ah*60+am) - (eh*60+em);
+  return diff>0? diff : 0;
+}
+function monthDaysCount(year, month){ return new Date(year, month, 0).getDate(); }
+
+/* ======================= 6b. AUTO-BACKUP / PASSWORD / MISC ======================= */
+var DIRTY=false, snapTimer=null, UNLOCKED=false;
+
+function dataChanged(){
+  DIRTY=true;
+  try{ clearTimeout(snapTimer); }catch(e){}
+  snapTimer=setTimeout(()=>{ try{maybeAutoSnapshot(false,6);}catch(e){} }, 90000);
+}
+function buildBackupData(){
+  return {groups:STATE.groups, students:STATE.students, attendance:STATE.attendance, meta:STATE.meta, exportedAt:new Date().toISOString(), app:'registre_presence_trilingue', v:1};
+}
+async function importBackupData(data){
+  try{ await takeSnapshot(); }catch(e){} // safety copy before overwrite
+  await idbClear('groups'); await idbClear('students'); await idbClear('attendance');
+  for(const g of (data.groups||[])) await idbPut('groups', g);
+  for(const s of (data.students||[])) await idbPut('students', s);
+  for(const a of (data.attendance||[])) await idbPut('attendance', a);
+  if(data.meta){ for(const k in data.meta){ if(k.indexOf('_sys')===0) continue; await saveMeta(k, data.meta[k]); } }
+  await saveMeta('isDemo', false);
+  await loadAll();
+}
+async function takeSnapshot(){
+  const rec = {id:uid(), createdAt:new Date().toISOString(), ts:Date.now(), data:buildBackupData()};
+  await idbPutRaw('snapshots', rec);
+  STATE.meta._sysLastSnap = String(Date.now());
+  await idbPutRaw('meta',{key:'_sysLastSnap', value:STATE.meta._sysLastSnap});
+  const all = (await idbGetAll('snapshots')).sort((a,b)=>(a.ts||0)-(b.ts||0));
+  while(all.length>12){ const old=all.shift(); try{ await idbDelete('snapshots', old.id); }catch(e){} }
+  DIRTY=false;
+  return rec;
+}
+function autoIntervalDays(){ const d=parseInt(STATE.meta.autoBackupDays||'7'); return (isNaN(d)||d<1)?7:d; }
+async function maybeAutoSnapshot(force, minHours){
+  if(!force && STATE.meta.autoBackup==='off') return false;
+  const last = parseInt(STATE.meta._sysLastSnap||'0');
+  const gate = force?0:(minHours||168)*36e5;
+  if(Date.now()-last < gate) return false;
+  await takeSnapshot();
+  return true;
+}
+function setupAutoBackup(){
+  const flush=()=>{ if(DIRTY){ try{ maybeAutoSnapshot(false,6); }catch(e){} } };
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') flush(); });
+  window.addEventListener('pagehide', flush);
+  setTimeout(()=>{ try{ maybeAutoSnapshot(false, autoIntervalDays()*24); }catch(e){} }, 4000);
+}
+function fmtDT(ts){
+  if(!ts) return t('never');
+  const d=new Date(parseInt(ts)); const p=n=>String(n).padStart(2,'0');
+  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+async function sha256hex(str){
+  try{
+    if(window.crypto&&crypto.subtle){
+      const d=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(d)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){}
+  let h=0x811c9dc5; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; }
+  return 'fh'+h.toString(16);
+}
+function isLocked(){ return !!STATE.meta.pwHash && !UNLOCKED; }
+function askPassword(cb){
+  openModal(`<h3>🔒 ${t('pwTitle')}</h3>
+    <div class="field"><label>${t('pwEnter')}</label><input id="pwAskInput" type="password"></div>
+    <div class="btn-row"><button class="btn" id="pwAskOk">${t('pwUnlock')}</button>
+    <button class="btn secondary" id="pwAskCancel">${t('cancel')}</button></div>`);
+  const inp=document.getElementById('pwAskInput'); inp.focus();
+  const ok=async ()=>{ const h=await sha256hex((STATE.meta.pwSalt||'')+'::'+inp.value);
+    if(h===STATE.meta.pwHash){ UNLOCKED=true; closeModal(); cb(true); } else { toast(t('pwWrong'),'err'); cb(false); } };
+  document.getElementById('pwAskOk').onclick=ok;
+  inp.onkeydown=(e)=>{ if(e.key==='Enter') ok(); };
+  document.getElementById('pwAskCancel').onclick=()=>{ closeModal(); cb(false); };
+}
+function viewLock(){
+  return `<div class="page-header"><h2>${t('settings_title')}</h2></div>
+  <div class="card" style="max-width:460px;"><h3>🔒 ${t('lockedTitle')}</h3>
+    <div class="field"><label>${t('pwEnter')}</label><input id="lockPwInput" type="password"></div>
+    <div class="btn-row"><button class="btn" id="lockUnlockBtn">${t('pwUnlock')}</button></div>
+  </div>`;
+}
+function afterLock(){
+  const go=async ()=>{ const v=document.getElementById('lockPwInput').value;
+    const h=await sha256hex((STATE.meta.pwSalt||'')+'::'+v);
+    if(h===STATE.meta.pwHash){ UNLOCKED=true; renderApp(); } else toast(t('pwWrong'),'err'); };
+  document.getElementById('lockUnlockBtn').onclick=go;
+  document.getElementById('lockPwInput').onkeydown=(e)=>{ if(e.key==='Enter') go(); };
+}
+function expectedTimeFor(groupId, date){
+  const g = groupId? groupById(groupId):null;
+  let dow=-1; try{ dow=new Date(date+'T00:00:00').getDay(); }catch(e){}
+  if(g&&g.schedule&&dow>=0&&g.schedule[dow]) return g.schedule[dow];
+  if(g&&g.defaultTime) return g.defaultTime;
+  return STATE.meta.defaultClassTime||'08:00';
+}
+function dayNoteKey(gid,date){ return 'daynote_'+gid+'_'+date; }
+function dayNoteGet(gid,date){ return STATE.meta[dayNoteKey(gid,date)]||''; }
+function alertThresholdVal(){ const v=parseInt(STATE.meta.alertThreshold||'3'); return (isNaN(v)||v<1)?3:v; }
+function flaggedIds(){
+  const th=alertThresholdVal(); const c={};
+  STATE.attendance.forEach(r=>{ if(r.status==='absent'&&r.justified!==true) c[r.studentId]=(c[r.studentId]||0)+1; });
+  const s={}; Object.keys(c).forEach(k=>{ if(c[k]>=th) s[k]=c[k]; });
+  return s;
+}
+function studentsCsvString(){
+  const rows = [[t('th_no'),t('th_name'),t('th_dob'),t('th_repeater'),t('th_group')]];
+  STATE.students.forEach(s=>rows.push([s.number, s.name, s.dob||'', s.repeater?1:0, groupName(groupById(s.groupId))]));
+  return rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+}
+function downloadBlob(blob,name){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{ try{URL.revokeObjectURL(a.href);}catch(e){} a.remove(); },800);
+}
+/* ---- minimal stored-ZIP writer (no compression, valid for Explorer) ---- */
+var CRC_T=null;
+function crc32Init(){ CRC_T=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); CRC_T[n]=c>>>0; } }
+function crc32Bytes(u8){ if(!CRC_T) crc32Init(); let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=CRC_T[(c^u8[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function dosTime(d){ return ((d.getHours()<<11)|(d.getMinutes()<<5)|(((d.getSeconds()/2)|0)))&0xFFFF; }
+function dosDate(d){ return (((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xFFFF; }
+function buildZip(files){
+  const enc=new TextEncoder(); const now=new Date();
+  const chunks=[]; const central=[]; let offset=0;
+  const u16=v=>new Uint8Array([v&255,(v>>8)&255]);
+  const u32=v=>new Uint8Array([v&255,(v>>8)&255,(v>>16)&255,(v>>24)&255]);
+  const push=a=>{ chunks.push(a); offset+=a.length; };
+  files.forEach(f=>{
+    const nameU8=enc.encode(f.name); const crc=crc32Bytes(f.data);
+    const lh=new Uint8Array(30);
+    lh.set([0x50,0x4b,0x03,0x04,20,0,0,0],0); lh.set(u16(0),8);
+    lh.set(u16(dosTime(now)),10); lh.set(u16(dosDate(now)),12);
+    lh.set(u32(crc),14); lh.set(u32(f.data.length),18); lh.set(u32(f.data.length),22);
+    lh.set(u16(nameU8.length),26); lh.set(u16(0),28);
+    const co=offset; push(lh); push(nameU8); push(f.data);
+    central.push({nameU8,crc,size:f.data.length,offset:co});
+  });
+  const cdStart=offset; let cdSize=0;
+  central.forEach(c=>{
+    const ch=new Uint8Array(46);
+    ch.set([0x50,0x4b,0x01,0x02,20,0,20,0,0,0],0); ch.set(u16(0),10);
+    ch.set(u16(dosTime(now)),12); ch.set(u16(dosDate(now)),14);
+    ch.set(u32(c.crc),16); ch.set(u32(c.size),20); ch.set(u32(c.size),24);
+    ch.set(u16(c.nameU8.length),28); ch.set(u16(0),30); ch.set(u16(0),32);
+    ch.set(u32(c.offset),42);
+    push(ch); push(c.nameU8); cdSize+=46+c.nameU8.length;
+  });
+  const end=new Uint8Array(22);
+  end.set([0x50,0x4b,0x05,0x06,0,0,0,0],0);
+  end.set(u16(central.length),8); end.set(u16(central.length),10);
+  end.set(u32(cdSize),12); end.set(u32(cdStart),16); end.set(u16(0),20);
+  push(end);
+  return new Blob(chunks,{type:'application/zip'});
+}
+function svgRateCurve(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const pts=[];
+  for(let i=11;i>=0;i--){
+    const end=new Date(now); end.setDate(end.getDate()-i*7);
+    const start=new Date(end); start.setDate(start.getDate()-6);
+    const sI=start.toISOString().slice(0,10), eI=end.toISOString().slice(0,10);
+    let p=0,tot=0;
+    STATE.attendance.forEach(r=>{ if(r.date>=sI&&r.date<=eI){ tot++; if(r.status==='present') p++; } });
+    const q=n=>String(n).padStart(2,'0');
+    pts.push({label:`${q(start.getDate())}/${q(start.getMonth()+1)}`, rate: tot?Math.round(p/tot*100):null});
+  }
+  if(!pts.some(x=>x.rate!==null)) return `<div class="empty-state">${t('noData')}</div>`;
+  const W=640,H=210,pl=36,pr=12,pt=12,pb=28, iw=W-pl-pr, ih=H-pt-pb;
+  const X=i=>pl+iw*(i/(pts.length-1)), Y=v=>pt+ih*(1-v/100);
+  let grid=''; [0,25,50,75,100].forEach(v=>{ grid+=`<line x1="${pl}" y1="${Y(v)}" x2="${W-pr}" y2="${Y(v)}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4 3"></line><text x="${pl-5}" y="${Y(v)+4}" text-anchor="end" font-size="10" fill="#64748b">${v}</text>`; });
+  let line='', dots='', labels='';
+  let prev=null;
+  pts.forEach((x,i)=>{
+    if(x.rate===null){ prev=null; return; }
+    const cx=X(i), cy=Y(x.rate);
+    if(prev) line+=`<line x1="${prev[0]}" y1="${prev[1]}" x2="${cx}" y2="${cy}" stroke="#2563eb" stroke-width="2.5"></line>`;
+    prev=[cx,cy];
+    dots+=`<circle cx="${cx}" cy="${cy}" r="4" fill="#2563eb"><title>${x.rate}%</title></circle>`;
+    if(i%2===0) labels+=`<text x="${cx}" y="${H-8}" text-anchor="middle" font-size="10" fill="#64748b">${x.label}</text>`;
+  });
+  return `<div class="table-wrap"><svg viewBox="0 0 ${W} ${H}" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">${grid}${line}${dots}${labels}</svg></div>`;
+}
+
+/* ======================= 7. DASHBOARD VIEW ======================= */
+function viewDashboard(){
+  const today = todayISO();
+  const todayRecs = STATE.attendance.filter(a=>a.date===today);
+  const totalStudents = STATE.students.length;
+  const presentT = todayRecs.filter(r=>r.status==='present').length;
+  const absentT = todayRecs.filter(r=>r.status==='absent').length;
+  const justT = todayRecs.filter(r=>r.status==='absent'&&r.justified===true).length;
+  const unjustT = todayRecs.filter(r=>r.status==='absent'&&r.justified!==true).length;
+  const lateT = todayRecs.filter(r=>r.status==='late').length;
+  const rateT = todayRecs.length? Math.round((presentT/todayRecs.length)*100):0;
+
+  const now = new Date(); const curMonth = now.getMonth()+1, curYear = now.getFullYear();
+  const monthRecs = STATE.attendance.filter(a=>{ const d=new Date(a.date+'T00:00:00'); return (d.getMonth()+1)===curMonth && d.getFullYear()===curYear; });
+  const monthAbs = monthRecs.filter(r=>r.status==='absent').length;
+  const monthLate = monthRecs.filter(r=>r.status==='late').length;
+  const monthPresent = monthRecs.filter(r=>r.status==='present').length;
+  const monthRate = monthRecs.length? Math.round((monthPresent/monthRecs.length)*100):0;
+
+  const yearRecs = STATE.attendance.filter(a=>{ const d=new Date(a.date+'T00:00:00'); return d.getFullYear()===curYear; });
+  const yearAbs = yearRecs.filter(r=>r.status==='absent').length;
+  const yearLate = yearRecs.filter(r=>r.status==='late').length;
+  const yearPresent = yearRecs.filter(r=>r.status==='present').length;
+  const yearRate = yearRecs.length? Math.round((yearPresent/yearRecs.length)*100):0;
+
+  // most absent
+  const absCountByStudent = {};
+  STATE.attendance.filter(r=>r.status==='absent').forEach(r=>{ absCountByStudent[r.studentId]=(absCountByStudent[r.studentId]||0)+1; });
+  const mostAbsent = Object.entries(absCountByStudent).sort((a,b)=>b[1]-a[1]).slice(0,5)
+    .map(([sid,count])=>({student:studentById(sid), count})).filter(x=>x.student);
+
+  // watch list : unjustified absences >= threshold
+  const thAlert = alertThresholdVal();
+  const flagged = flaggedIds();
+  const watchList = Object.keys(flagged).map(id=>({student:studentById(id), count:flagged[id]}))
+    .filter(x=>x.student).sort((a,b)=>b.count-a.count).slice(0,10);
+
+  return `
+  <div class="page-header"><h2>${t('dashboard_title')}</h2></div>
+  ${demoBanner()}
+  <div class="card"><h3>${t('today_stats')} — ${fmtDate(today)}</h3>
+    <div class="grid grid-4">
+      <div class="stat-card blue"><div class="num">${totalStudents}</div><div class="lbl">${t('total_students')}</div></div>
+      <div class="stat-card green"><div class="num">${presentT}</div><div class="lbl">${t('present_today')}</div></div>
+      <div class="stat-card red"><div class="num">${absentT}</div><div class="lbl">${t('absent_today')}</div></div>
+      <div class="stat-card orange"><div class="num">${lateT}</div><div class="lbl">${t('late_today')}</div></div>
+      <div class="stat-card green"><div class="num">${justT}</div><div class="lbl">${t('justified_abs')}</div></div>
+      <div class="stat-card red"><div class="num">${unjustT}</div><div class="lbl">${t('unjustified_abs')}</div></div>
+      <div class="stat-card blue"><div class="num">${rateT}%</div><div class="lbl">${t('attendanceRate')}</div></div>
+    </div>
+  </div>
+  <div class="grid grid-2">
+    <div class="card"><h3>${t('month_stats')}</h3>
+      <div class="grid grid-3">
+        <div class="stat-card red"><div class="num">${monthAbs}</div><div class="lbl">${t('th_totalAbs')}</div></div>
+        <div class="stat-card orange"><div class="num">${monthLate}</div><div class="lbl">${t('th_totalLate')}</div></div>
+        <div class="stat-card blue"><div class="num">${monthRate}%</div><div class="lbl">${t('attendanceRate')}</div></div>
+      </div>
+    </div>
+    <div class="card"><h3>${t('year_stats')}</h3>
+      <div class="grid grid-3">
+        <div class="stat-card red"><div class="num">${yearAbs}</div><div class="lbl">${t('th_totalAbs')}</div></div>
+        <div class="stat-card orange"><div class="num">${yearLate}</div><div class="lbl">${t('th_totalLate')}</div></div>
+        <div class="stat-card blue"><div class="num">${yearRate}%</div><div class="lbl">${t('attendanceRate')}</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><h3>${t('most_absent')}</h3>
+    ${mostAbsent.length? `<div class="table-wrap"><table><thead><tr><th>${t('th_name')}</th><th>${t('th_group')}</th><th>${t('absences')}</th></tr></thead>
+      <tbody>${mostAbsent.map(x=>`<tr><td>${escapeHtml(x.student.name)}</td><td>${escapeHtml(groupName(groupById(x.student.groupId)))}</td><td><span class="badge absent">${x.count}</span></td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty-state">${t('noData')}</div>`}
+  </div>
+  <div class="card"><h3>⚠️ ${t('watchList')} (≥ ${thAlert})</h3>
+    ${watchList.length? `<div class="table-wrap"><table><thead><tr><th>${t('th_name')}</th><th>${t('th_group')}</th><th>${t('unexcusedAbs')}</th></tr></thead>
+      <tbody>${watchList.map(x=>`<tr><td>${escapeHtml(x.student.name)}</td><td>${escapeHtml(groupName(groupById(x.student.groupId)))}</td><td><span class="badge absent">${x.count}</span></td></tr>`).join('')}</tbody></table></div>`
+      : `<div class="empty-state">${t('noAlert')}</div>`}
+  </div>
+  <div class="card"><h3>${t('rateCurve')} — ${t('last12weeks')}</h3>${svgRateCurve()}</div>`;
+}
+function afterDashboard(){ bindDemoBanner(); }
+
+/* ======================= 8. GROUPS VIEW ======================= */
+function groupFormHtml(g){
+  g = g || {name:'',level:'',class:'',teacher:'',subject:'',classroom:'',year:STATE.meta.schoolYear||''};
+  const sched = (g&&g.schedule)||{};
+  return `
+    <h3>${g.id? t('edit'):t('addGroup')}</h3>
+    <div class="field"><label>${t('g_name')} *</label><input id="gf_name" value="${escapeHtml(g.name)}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('g_level')}</label><input id="gf_level" value="${escapeHtml(g.level)}"></div>
+      <div class="field"><label>${t('g_class')}</label><input id="gf_class" value="${escapeHtml(g.class)}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('g_teacher')}</label><input id="gf_teacher" value="${escapeHtml(g.teacher)}"></div>
+      <div class="field"><label>${t('g_subject')}</label><input id="gf_subject" value="${escapeHtml(g.subject)}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('g_classroom')}</label><input id="gf_classroom" value="${escapeHtml(g.classroom)}"></div>
+      <div class="field"><label>${t('g_year')}</label><input id="gf_year" value="${escapeHtml(g.year)}"></div>
+    </div>
+    <div class="field"><label>${t('groupDefaultTime')}</label><input id="gf_defaultTime" type="text" inputmode="numeric" placeholder="08:00" value="${escapeHtml(g.defaultTime||'')}"></div>
+    <div class="field"><label>${t('timetable')} <span class="small">(${t('leaveEmpty')})</span></label>
+      <div class="field-row">${t('weekdays').map((d,i)=>`<div class="field" style="min-width:100px;flex:1;"><label>${d}</label><input type="text" inputmode="numeric" placeholder="08:00" id="gf_sched_${i}" value="${escapeHtml(sched[i]||'')}"></div>`).join('')}</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="gfSaveBtn">${t('save')}</button>
+      <button class="btn secondary" id="gfCancelBtn">${t('cancel')}</button>
+    </div>`;
+}
+function openGroupForm(g){
+  openModal(groupFormHtml(g), true);
+  document.getElementById('gfCancelBtn').onclick = closeModal;
+  document.getElementById('gfSaveBtn').onclick = async ()=>{
+    const name = document.getElementById('gf_name').value.trim();
+    if(!name){ toast(t('required'),'err'); return; }
+    const sched={};
+    for(let i=0;i<7;i++){ const el=document.getElementById('gf_sched_'+i);
+      if(el&&el.value.trim()!==''){ const vv=toLatinDigits(el.value.trim()); if(!validTimeStr(vv)){ toast(t('invalidTime'),'err'); return; } sched[i]=vv; } }
+    const defTime=toLatinDigits(document.getElementById('gf_defaultTime').value.trim());
+    if(defTime&&!validTimeStr(defTime)){ toast(t('invalidTime'),'err'); return; }
+    const obj = {
+      id: g&&g.id? g.id: uid(),
+      name, level:document.getElementById('gf_level').value.trim(),
+      class:document.getElementById('gf_class').value.trim(),
+      teacher:document.getElementById('gf_teacher').value.trim(),
+      subject:document.getElementById('gf_subject').value.trim(),
+      classroom:document.getElementById('gf_classroom').value.trim(),
+      year:document.getElementById('gf_year').value.trim(),
+      defaultTime:defTime,
+      schedule:sched,
+    };
+    await idbPut('groups', obj);
+    const idx = STATE.groups.findIndex(x=>x.id===obj.id);
+    if(idx>=0) STATE.groups[idx]=obj; else STATE.groups.push(obj);
+    toast(g&&g.id? t('updated'):t('saved'),'ok');
+    closeModal(); renderApp();
+  };
+}
+function viewGroups(){
+  const q=(STATE.groupsSearch||'').toLowerCase();
+  let list=STATE.groups.slice();
+  if(q) list=list.filter(g=>(g.name+' '+(g.level||'')+' '+(g.class||'')+' '+(g.teacher||'')+' '+(g.subject||'')).toLowerCase().includes(q));
+  return `
+  <div class="page-header"><h2>${t('groups_title')}</h2>
+    <button class="btn no-print" id="addGroupBtn">➕ ${t('addGroup')}</button>
+  </div>
+  ${demoBanner()}
+  <div class="search-bar no-print"><input id="groupsSearchInput" placeholder="${t('search')}" value="${escapeHtml(STATE.groupsSearch||'')}"></div>
+  <div class="card">
+    ${list.length? `<div class="table-wrap"><table><thead><tr>
+      <th>${t('g_name')}</th><th>${t('g_level')}</th><th>${t('g_class')}</th><th>${t('g_teacher')}</th>
+      <th>${t('g_subject')}</th><th>${t('g_classroom')}</th><th>${t('g_year')}</th><th>${t('actions')}</th>
+    </tr></thead><tbody>
+    ${list.map(g=>`<tr>
+      <td><strong>${escapeHtml(g.name)}</strong>${STATE.dailyGroupId===g.id?` <span class="badge present">${t('selectedGroup')}</span>`:''}</td><td>${escapeHtml(g.level)}</td><td>${escapeHtml(g.class)}</td>
+      <td>${escapeHtml(g.teacher)}</td><td>${escapeHtml(g.subject)}</td><td>${escapeHtml(g.classroom)}</td><td>${escapeHtml(g.year)}</td>
+      <td>
+        <button class="btn sm success" data-select="${g.id}" title="${t('selectGroupBtn')}">✔ ${t('select')}</button>
+        <button class="btn sm secondary" data-edit="${g.id}">✏️</button>
+        <button class="btn sm secondary" data-dup="${g.id}">⧉</button>
+        <button class="btn sm danger" data-del="${g.id}">🗑️</button>
+      </td></tr>`).join('')}
+    </tbody></table></div>` : `<div class="empty-state">${t('noGroups')}</div>`}
+  </div>`;
+}
+function afterGroups(){
+  bindDemoBanner();
+  document.getElementById('addGroupBtn').onclick = ()=>openGroupForm(null);
+  const si=document.getElementById('groupsSearchInput');
+  if(si) si.oninput=(e)=>{ STATE.groupsSearch=e.target.value; const v=e.target.value; renderApp(); const n=document.getElementById('groupsSearchInput'); if(n){n.focus(); n.selectionStart=n.value.length;} };
+  document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{
+    STATE.dailyGroupId=b.dataset.select; STATE.monthlyGroupId=b.dataset.select; STATE.annualGroupId=b.dataset.select;
+    STATE.view='daily'; toast(t('selectedGroup'),'ok'); renderApp();
+  });
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openGroupForm(groupById(b.dataset.edit)));
+  document.querySelectorAll('[data-dup]').forEach(b=>b.onclick=async ()=>{
+    const g = groupById(b.dataset.dup);
+    const copy = {...g, id:uid(), name:g.name+' (copy)'};
+    await idbPut('groups',copy); STATE.groups.push(copy); toast(t('saved'),'ok'); renderApp();
+  });
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    confirmAction(t('confirmDelete'), async ()=>{
+      await idbDelete('groups', b.dataset.del);
+      STATE.groups = STATE.groups.filter(g=>g.id!==b.dataset.del);
+      toast(t('deleted'),'ok'); renderApp();
+    }, true);
+  });
+}
+
+/* ======================= 9. STUDENTS VIEW ======================= */
+function nextStudentNumber(){
+  return STATE.students.length? Math.max(...STATE.students.map(s=>s.number||0))+1 : 1;
+}
+function studentFormHtml(s){
+  s = s || {name:'',dob:'',repeater:false,groupId:STATE.groups[0]?STATE.groups[0].id:''};
+  return `
+    <h3>${s.id? t('edit'):t('addStudent')}</h3>
+    <div class="field"><label>${t('th_name')} *</label><input id="sf_name" value="${escapeHtml(s.name)}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('th_dob')}</label><input id="sf_dob" type="text" inputmode="numeric" placeholder="${t('datePh')}" value="${escapeHtml(isoToInput(s.dob))}"></div>
+      <div class="field"><label>${t('th_repeater')}</label>
+        <select id="sf_repeater"><option value="0" ${!s.repeater?'selected':''}>${t('repeaterNo')}</option><option value="1" ${s.repeater?'selected':''}>${t('repeaterYes')}</option></select>
+      </div>
+    </div>
+    <div class="field"><label>${t('th_group')}</label>
+      <select id="sf_group">${STATE.groups.map(g=>`<option value="${g.id}" ${s.groupId===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('') || `<option value="">${t('none')}</option>`}</select>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="sfSaveBtn">${t('save')}</button>
+      <button class="btn secondary" id="sfCancelBtn">${t('cancel')}</button>
+    </div>`;
+}
+function openStudentForm(s){
+  openModal(studentFormHtml(s));
+  document.getElementById('sfCancelBtn').onclick = closeModal;
+  document.getElementById('sfSaveBtn').onclick = async ()=>{
+    const name = document.getElementById('sf_name').value.trim();
+    if(!name){ toast(t('required'),'err'); return; }
+    const dobRaw = document.getElementById('sf_dob').value;
+    let dob='';
+    if(dobRaw.trim()!==''){ const parsed=parseDateInput(dobRaw); if(!parsed){ toast(t('invalidDate'),'err'); return; } dob=parsed; }
+    const obj = {
+      id: s&&s.id? s.id: uid(),
+      number: s&&s.number? s.number: nextStudentNumber(),
+      name, dob,
+      repeater: document.getElementById('sf_repeater').value==='1',
+      groupId: document.getElementById('sf_group').value,
+    };
+    await idbPut('students', obj);
+    const idx = STATE.students.findIndex(x=>x.id===obj.id);
+    if(idx>=0) STATE.students[idx]=obj; else STATE.students.push(obj);
+    toast(s&&s.id? t('updated'):t('saved'),'ok');
+    closeModal(); renderApp();
+  };
+}
+function viewStudents(){
+  const q = (STATE.studentsSearch||'').toLowerCase();
+  const flagged = flaggedIds();
+  let list = STATE.students.slice();
+  if(STATE.studentsGroupFilter) list=list.filter(s=>s.groupId===STATE.studentsGroupFilter);
+  if(q) list = list.filter(s=>s.name.toLowerCase().includes(q));
+  if(STATE.studentsSort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+  else if(STATE.studentsSort==='dob') list.sort((a,b)=>(a.dob||'').localeCompare(b.dob||''));
+  else list.sort((a,b)=>(a.number||0)-(b.number||0));
+  return `
+  <div class="page-header"><h2>${t('students_title')}</h2>
+    <div class="btn-row no-print">
+      <button class="btn" id="addStudentBtn">➕ ${t('addStudent')}</button>
+      <button class="btn secondary" id="exportStudentsBtn">⬇️ ${t('export')}</button>
+      <label class="btn secondary" style="margin:0;">⬆️ ${t('import')}<input type="file" id="importStudentsFile" accept=".csv" style="display:none;"></label>
+    </div>
+  </div>
+  ${demoBanner()}
+  <div class="search-bar no-print">
+    <input id="studentsSearchInput" placeholder="${t('studentSearchPh')}" value="${escapeHtml(STATE.studentsSearch||'')}">
+    <select id="studentsGroupFilter" title="${t('filterGroup')}">
+      <option value="">${t('filterGroup')}: ${t('all')}</option>
+      ${STATE.groups.map(g=>`<option value="${g.id}" ${STATE.studentsGroupFilter===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('')}
+    </select>
+    <select id="studentsSortSelect" title="${t('sortBy')}">
+      <option value="number" ${STATE.studentsSort==='number'?'selected':''}>${t('sortBy')}: ${t('sortNumber')}</option>
+      <option value="name" ${STATE.studentsSort==='name'?'selected':''}>${t('sortBy')}: ${t('sortName')}</option>
+      <option value="dob" ${STATE.studentsSort==='dob'?'selected':''}>${t('sortBy')}: ${t('sortDob')}</option>
+    </select>
+  </div>
+  <div class="card">
+    ${list.length? `<div class="table-wrap"><table><thead><tr>
+      <th>${t('th_no')}</th><th>${t('th_name')}</th><th>${t('th_dob')}</th><th>${t('th_repeater')}</th><th>${t('th_group')}</th><th>${t('actions')}</th>
+    </tr></thead><tbody>
+    ${list.map(s=>`<tr>
+      <td>${s.number}</td><td>${escapeHtml(s.name)}${flagged[s.id]?` ⚠️ <span class="badge absent">${flagged[s.id]}</span>`:''}</td><td>${fmtDate(s.dob)}</td>
+      <td>${s.repeater? `<span class="badge orange" style="background:var(--orange-light);color:var(--orange);">${t('repeaterYes')}</span>`:`<span class="badge neutral">${t('repeaterNo')}</span>`}</td>
+      <td>${escapeHtml(groupName(groupById(s.groupId)))}</td>
+      <td>
+        <button class="btn sm secondary" data-card="${s.id}">🪪</button>
+        <button class="btn sm secondary" data-edit="${s.id}">✏️</button>
+        <button class="btn sm secondary" data-move="${s.id}">↪️</button>
+        <button class="btn sm danger" data-del="${s.id}">🗑️</button>
+      </td></tr>`).join('')}
+    </tbody></table></div>` : `<div class="empty-state">${t('noData')}</div>`}
+  </div>`;
+}
+function afterStudents(){
+  bindDemoBanner();
+  document.getElementById('addStudentBtn').onclick = ()=>openStudentForm(null);
+  document.getElementById('studentsSearchInput').oninput = (e)=>{ STATE.studentsSearch=e.target.value; renderApp(); const n=document.getElementById('studentsSearchInput'); if(n){n.focus(); n.selectionStart=n.value.length;} };
+  const sgf=document.getElementById('studentsGroupFilter'); if(sgf) sgf.onchange=(e)=>{STATE.studentsGroupFilter=e.target.value; renderApp();};
+  const sss=document.getElementById('studentsSortSelect'); if(sss) sss.onchange=(e)=>{STATE.studentsSort=e.target.value; renderApp();};
+  document.getElementById('exportStudentsBtn').onclick = exportStudentsCsv;
+  document.getElementById('importStudentsFile').onchange = importStudentsCsv;
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openStudentForm(studentById(b.dataset.edit)));
+  document.querySelectorAll('[data-card]').forEach(b=>b.onclick=()=>{ STATE.selectedStudentId=b.dataset.card; openStudentCard(b.dataset.card); });
+  document.querySelectorAll('[data-move]').forEach(b=>b.onclick=()=>openMoveGroupModal(b.dataset.move));
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    confirmAction(t('confirmDelete'), async ()=>{
+      await idbDelete('students', b.dataset.del);
+      STATE.students = STATE.students.filter(s=>s.id!==b.dataset.del);
+      toast(t('deleted'),'ok'); renderApp();
+    }, true);
+  });
+}
+function openMoveGroupModal(studentId){
+  const s = studentById(studentId);
+  openModal(`
+    <h3>${t('moveGroup')}</h3>
+    <div class="field"><label>${t('th_group')}</label>
+      <select id="mv_group">${STATE.groups.map(g=>`<option value="${g.id}" ${s.groupId===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('')}</select>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="mvSaveBtn">${t('save')}</button>
+      <button class="btn secondary" id="mvCancelBtn">${t('cancel')}</button>
+    </div>`);
+  document.getElementById('mvCancelBtn').onclick = closeModal;
+  document.getElementById('mvSaveBtn').onclick = async ()=>{
+    s.groupId = document.getElementById('mv_group').value;
+    await idbPut('students', s);
+    toast(t('updated'),'ok'); closeModal(); renderApp();
+  };
+}
+function exportStudentsCsv(){
+  const blob = new Blob(['\uFEFF'+studentsCsvString()], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='students.csv'; a.click();
+}
+function importStudentsCsv(e){
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (ev)=>{
+    const text = ev.target.result.replace(/^\uFEFF/,'');
+    const lines = text.split(/\r?\n/).filter(l=>l.trim());
+    let count=0;
+    for(let i=1;i<lines.length;i++){ // skip header
+      const cols = lines[i].split(',').map(c=>c.replace(/^"|"$/g,'').replace(/""/g,'"'));
+      if(!cols[1]) continue;
+      const obj = { id:uid(), number:nextStudentNumber()+count, name:cols[1], dob:cols[2]||'', repeater: cols[3]==='1', groupId: STATE.groups.find(g=>g.name===cols[4])?.id || (STATE.groups[0]?STATE.groups[0].id:'') };
+      await idbPut('students', obj); STATE.students.push(obj); count++;
+    }
+    toast(t('saved'),'ok'); renderApp();
+  };
+  reader.readAsText(file);
+}
+
+/* Student individual card */
+function openStudentCard(studentId){
+  const s = studentById(studentId);
+  if(!s) return;
+  const stats = computeStudentStats(studentId);
+  const recentRecs = stats.recs.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,15);
+  openModal(`
+    <h3>🪪 ${t('student_card')} — ${escapeHtml(s.name)}</h3>
+    <p class="small">${t('th_group')}: ${escapeHtml(groupName(groupById(s.groupId)))} · ${t('th_dob')}: ${fmtDate(s.dob)} · ${s.repeater?t('repeaterYes'):t('repeaterNo')}</p>
+    <div class="grid grid-3" style="margin-bottom:14px;">
+      <div class="stat-card green"><div class="num">${stats.presences}</div><div class="lbl">${t('presences')}</div></div>
+      <div class="stat-card red"><div class="num">${stats.absences}</div><div class="lbl">${t('absences')}</div></div>
+      <div class="stat-card orange"><div class="num">${stats.lates}</div><div class="lbl">${t('lates')}</div></div>
+      <div class="stat-card green"><div class="num">${stats.excused}</div><div class="lbl">${t('excusedAbs')}</div></div>
+      <div class="stat-card red"><div class="num">${stats.unexcused}</div><div class="lbl">${t('unexcusedAbs')}</div></div>
+      <div class="stat-card blue"><div class="num">${stats.rate}%</div><div class="lbl">${t('attendanceRate')}</div></div>
+    </div>
+    <div id="studentChartHolder">${svgBarChart(stats)}</div>
+    <h4 style="margin-top:14px;">${t('fullHistory')}</h4>
+    <div class="table-wrap" style="max-height:220px;overflow-y:auto;">
+    ${recentRecs.length? `<table><thead><tr><th>${t('th_date')}</th><th>${t('th_status')}</th><th>${t('th_justified')}</th><th>${t('th_reason')}</th></tr></thead>
+      <tbody>${recentRecs.map(r=>`<tr><td>${fmtDate(r.date)}</td><td>${statusBadge(r.status)}</td>
+        <td>${r.status==='absent'? (r.justified? t('yes'):t('no')) : '-'}</td><td>${escapeHtml(r.reason||'')}</td></tr>`).join('')}</tbody></table>`
+      : `<div class="empty-state">${t('noHistory')}</div>`}
+    </div>
+    <div class="btn-row">
+      <button class="btn secondary no-print" id="printStudentBtn">🖨️ ${t('print_student')}</button>
+      <button class="btn secondary" id="scCloseBtn">${t('close')}</button>
+    </div>`, true);
+  document.getElementById('scCloseBtn').onclick = closeModal;
+  document.getElementById('printStudentBtn').onclick = ()=>printStudentCard(s, stats, recentRecs);
+}
+function statusBadge(status){
+  if(status==='present') return `<span class="badge present">${t('th_present')}</span>`;
+  if(status==='absent') return `<span class="badge absent">${t('th_absent')}</span>`;
+  if(status==='late') return `<span class="badge late">${t('th_late')}</span>`;
+  return '-';
+}
+function svgBarChart(stats){
+  const data = [
+    {label:t('presences'), value:stats.presences, color:'#16a34a'},
+    {label:t('absences'), value:stats.absences, color:'#dc2626'},
+    {label:t('lates'), value:stats.lates, color:'#ea580c'},
+  ];
+  const max = Math.max(1, ...data.map(d=>d.value));
+  const barW=70, gap=40, chartH=140, baseY=160;
+  const w = data.length*(barW+gap)+gap;
+  let bars='';
+  data.forEach((d,i)=>{
+    const h = Math.round((d.value/max)*chartH);
+    const x = gap + i*(barW+gap);
+    const y = baseY - h;
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="6" fill="${d.color}"></rect>
+      <text x="${x+barW/2}" y="${y-8}" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${d.value}</text>
+      <text x="${x+barW/2}" y="${baseY+18}" text-anchor="middle" font-size="11" fill="#64748b">${escapeHtml(d.label)}</text>`;
+  });
+  return `<div class="card" style="padding:10px;"><svg viewBox="0 0 ${w} 190" width="100%" height="190" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="${baseY}" x2="${w}" y2="${baseY}" stroke="#e2e8f0" stroke-width="1"></line>
+    ${bars}</svg></div>`;
+}
+
+/* ======================= 10. DAILY ATTENDANCE VIEW ======================= */
+function viewDaily(){
+  if(!STATE.dailyGroupId && STATE.groups.length) STATE.dailyGroupId = STATE.groups[0].id;
+  const g = groupById(STATE.dailyGroupId);
+  const students = g? studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0)) : [];
+  const date = STATE.dailyDate;
+  const meta = STATE.meta;
+
+  let rows = '';
+  students.forEach(s=>{
+    const rec = attForStudentDate(s.id, date) || {status:'', justified:null, reason:'', notes:'', arrivalTime:'', expectedTime: meta.defaultClassTime||'08:00'};
+    const prevAbsCount = computeStudentStats(s.id, a=>a.date<date && a.status==='absent').absences;
+    const dur = (rec.status==='late') ? computeLateDuration(rec.arrivalTime, rec.expectedTime) : null;
+    rows += `<tr data-row="${s.id}">
+      <td>${s.number}</td>
+      <td><a href="#" data-cardlink="${s.id}">${escapeHtml(s.name)}</a></td>
+      <td>${fmtDate(s.dob)}</td>
+      <td>${s.repeater? t('repeaterYes'):t('repeaterNo')}</td>
+      <td style="text-align:center;"><button class="p ${rec.status==='present'?'sel':''}" data-status="present" data-student="${s.id}" title="🟢 ${t('th_present')}" style="width:34px;height:30px;border-radius:6px;border:2px solid var(--gray-200);background:var(--white);cursor:pointer;${rec.status==='present'?'background:var(--green);border-color:var(--green);color:#fff;':''}">🟢</button></td>
+      <td style="text-align:center;"><button class="a ${rec.status==='absent'?'sel':''}" data-status="absent" data-student="${s.id}" title="🔴 ${t('th_absent')}" style="width:34px;height:30px;border-radius:6px;border:2px solid var(--gray-200);background:var(--white);cursor:pointer;${rec.status==='absent'?'background:var(--red);border-color:var(--red);color:#fff;':''}">🔴</button></td>
+      <td style="text-align:center;"><button class="l ${rec.status==='late'?'sel':''}" data-status="late" data-student="${s.id}" title="🟠 ${t('th_late')}" style="width:34px;height:30px;border-radius:6px;border:2px solid var(--gray-200);background:var(--white);cursor:pointer;${rec.status==='late'?'background:var(--orange);border-color:var(--orange);color:#fff;':''}">🟠</button></td>
+      <td style="text-align:center;">${prevAbsCount?`<span class="badge absent">${prevAbsCount}</span>`:'0'}</td>
+      <td>${rec.status==='absent'
+        ? `<select data-justified="${s.id}"><option value="">—</option><option value="1" ${rec.justified===true?'selected':''}>${t('yes')}</option><option value="0" ${rec.justified===false?'selected':''}>${t('no')}</option></select>`
+        : '<span class="small">—</span>'}</td>
+      <td>${rec.status==='late'
+        ? `<input type="text" inputmode="numeric" placeholder="08:00" data-arrival="${s.id}" value="${rec.arrivalTime||''}" style="width:90px;"><br><input type="text" inputmode="numeric" placeholder="08:00" data-expected="${s.id}" value="${rec.expectedTime||''}" title="${t('expectedTime')}" style="width:90px;margin-top:3px;"><br><span class="small">${t('lateDuration')}: ${dur!==null?dur+' '+t('minutes'):'-'}</span>`
+        : (rec.status==='absent'?'—':(rec.arrivalTime||'<span class="small">—</span>'))}</td>
+      <td><input data-reason="${s.id}" value="${escapeHtml(rec.reason||'')}" style="width:110px;" placeholder="${t('reasonLabel')}"></td>
+      <td><input data-notes="${s.id}" value="${escapeHtml(rec.notes||'')}" style="width:110px;" placeholder="${t('observationLabel')}"></td>
+    </tr>`;
+  });
+
+  return `
+  <div class="page-header"><h2>${t('daily_title')}</h2>
+    <div class="btn-row no-print">
+      <button class="btn secondary" id="printDailyBtn">🖨️ ${t('print_daily')}</button>
+      <button class="btn secondary" id="printBlankBtn">📝 ${t('printBlank')}</button>
+    </div>
+  </div>
+  ${demoBanner()}
+  <div class="card no-print">
+    <div class="field-row">
+      <div class="field"><label>${t('group')}</label>
+        <select id="dailyGroupSelect">${STATE.groups.map(gr=>`<option value="${gr.id}" ${gr.id===STATE.dailyGroupId?'selected':''}>${escapeHtml(gr.name)}</option>`).join('') || `<option>${t('none')}</option>`}</select>
+      </div>
+      <div class="field"><label>${t('date')}</label><input type="text" id="dailyDateInput" inputmode="numeric" placeholder="${t('datePh')}" value="${isoToInput(date)}"></div>
+      <div class="field"><label>${t('day')}</label><input value="${dayName(date)}" disabled></div>
+    </div>
+    <p class="small">${t('establishment')}: ${escapeHtml(meta.schoolName||'-')} | ${t('teacher')}: ${escapeHtml(g?g.teacher:meta.teacherName||'-')} | ${t('subject')}: ${escapeHtml(g?g.subject:meta.subject||'-')} | ${t('year')}: ${escapeHtml(g?g.year:meta.year||'-')}</p>
+    <div class="field"><label>${t('dayNote')}</label><textarea id="dailyNoteInput" rows="2" placeholder="${t('dayNotePh')}">${escapeHtml(g?dayNoteGet(g.id,date):'')}</textarea></div>
+    <div class="btn-row">
+      <button class="btn success sm" id="markAllPresentBtn">✅ ${t('markAllPresent')}</button>
+      <button class="btn secondary sm" id="resetStatusBtn">↺ ${t('resetStatus')}</button>
+    </div>
+  </div>
+  <div class="card">
+  ${!g ? `<div class="empty-state">${t('selectGroupFirst')}</div>` :
+    (students.length? `<div class="table-wrap"><table><thead><tr>
+      <th>${t('th_no')}</th><th>${t('th_name')}</th><th>${t('th_dob')}</th><th>${t('th_repeater')}</th>
+      <th>🟢 ${t('th_present')}</th><th>🔴 ${t('th_absent')}</th><th>🟠 ${t('th_late')}</th>
+      <th>${t('th_prevAbsence')}</th><th>${t('th_excused')}</th><th>${t('th_arrival')}</th><th>${t('th_reason')}</th><th>${t('th_notes')}</th>
+    </tr></thead><tbody id="dailyTbody">${rows}</tbody></table></div>`
+      : `<div class="empty-state">${t('noData')}</div>`)
+  }
+  </div>`;
+}
+function extraCellHtml(studentId, rec){
+  if(rec.status==='absent'){
+    return `
+      <div class="field-row" style="align-items:flex-end;">
+        <div class="field" style="min-width:110px;"><label>${t('excusedQ')}</label>
+          <select data-justified="${studentId}">
+            <option value="" ${rec.justified===null||rec.justified===undefined?'selected':''}>—</option>
+            <option value="1" ${rec.justified===true?'selected':''}>${t('yes')}</option>
+            <option value="0" ${rec.justified===false?'selected':''}>${t('no')}</option>
+          </select>
+        </div>
+        <div class="field" style="min-width:130px;"><label>${t('reasonLabel')}</label><input data-reason="${studentId}" value="${escapeHtml(rec.reason||'')}"></div>
+        <div class="field" style="min-width:130px;"><label>${t('observationLabel')}</label><input data-notes="${studentId}" value="${escapeHtml(rec.notes||'')}"></div>
+      </div>`;
+  }
+  if(rec.status==='late'){
+    const dur = computeLateDuration(rec.arrivalTime, rec.expectedTime);
+    return `
+      <div class="field-row" style="align-items:flex-end;">
+        <div class="field" style="min-width:110px;"><label>${t('th_arrival')}</label><input type="text" inputmode="numeric" placeholder="08:00" data-arrival="${studentId}" value="${rec.arrivalTime||''}"></div>
+        <div class="field" style="min-width:110px;"><label>${t('expectedTime')}</label><input type="text" inputmode="numeric" placeholder="08:00" data-expected="${studentId}" value="${rec.expectedTime||''}"></div>
+        <div class="field" style="min-width:90px;"><label>${t('lateDuration')}</label><input value="${dur!==null? dur+' '+t('minutes'):'-'}" disabled></div>
+        <div class="field" style="min-width:130px;"><label>${t('reasonLabel')}</label><input data-reason="${studentId}" value="${escapeHtml(rec.reason||'')}"></div>
+      </div>`;
+  }
+  return '';
+}
+async function setDailyStatus(studentId, status, date, groupId){
+  const existing = attForStudentDate(studentId, date);
+  if(existing && existing.status===status){
+    // toggle off
+    await removeAttendance(studentId, date);
+  } else {
+    await upsertAttendance({studentId, groupId, date, status,
+      justified: existing?existing.justified:null, reason: existing?existing.reason:'', notes: existing?existing.notes:'',
+      arrivalTime: existing?existing.arrivalTime:'', expectedTime: existing&&existing.expectedTime? existing.expectedTime : expectedTimeFor(groupId, date) });
+  }
+  renderApp();
+}
+function afterDaily(){
+  bindDemoBanner();
+  const gsel = document.getElementById('dailyGroupSelect');
+  if(gsel) gsel.onchange = (e)=>{ STATE.dailyGroupId = e.target.value; renderApp(); };
+  const dsel = document.getElementById('dailyDateInput');
+  if(dsel) dsel.onchange = (e)=>{
+    const v=e.target.value.trim();
+    if(v==='') return;
+    const iso=parseDateInput(v);
+    if(!iso){ toast(t('invalidDate'),'err'); renderApp(); return; }
+    STATE.dailyDate = iso; renderApp();
+  };
+  const mkAll = document.getElementById('markAllPresentBtn');
+  if(mkAll) mkAll.onclick = async ()=>{
+    const g = groupById(STATE.dailyGroupId); if(!g) return;
+    for(const s of studentsOfGroup(g.id)){
+      await upsertAttendance({studentId:s.id, groupId:g.id, date:STATE.dailyDate, status:'present', justified:null, reason:'', notes:'', arrivalTime:'', expectedTime:''});
+    }
+    toast(t('saved'),'ok'); renderApp();
+  };
+  const rst = document.getElementById('resetStatusBtn');
+  if(rst) rst.onclick = ()=>{
+    confirmAction(t('confirmDelete'), async ()=>{
+      const g = groupById(STATE.dailyGroupId); if(!g) return;
+      for(const s of studentsOfGroup(g.id)) await removeAttendance(s.id, STATE.dailyDate);
+      toast(t('deleted'),'ok'); renderApp();
+    }, true);
+  };
+  document.querySelectorAll('[data-status]').forEach(b=>{
+    b.onclick = ()=>setDailyStatus(b.dataset.student, b.dataset.status, STATE.dailyDate, STATE.dailyGroupId);
+  });
+  document.querySelectorAll('[data-cardlink]').forEach(a=>{
+    a.onclick=(e)=>{e.preventDefault(); openStudentCard(a.dataset.cardlink);};
+  });
+  document.querySelectorAll('[data-justified]').forEach(sel=>{
+    sel.onchange = async ()=>{
+      const rec = attForStudentDate(sel.dataset.justified, STATE.dailyDate);
+      if(rec){ rec.justified = sel.value===''? null : sel.value==='1'; await idbPut('attendance', rec); }
+    };
+  });
+  document.querySelectorAll('[data-reason]').forEach(inp=>{
+    inp.onchange = async ()=>{
+      let rec = attForStudentDate(inp.dataset.reason, STATE.dailyDate);
+      if(rec){ rec.reason=inp.value; await idbPut('attendance', rec); }
+      else { toast(t('selectGroupFirst'),'err'); }
+    };
+  });
+  document.querySelectorAll('[data-notes]').forEach(inp=>{
+    inp.onchange = async ()=>{ const rec = attForStudentDate(inp.dataset.notes, STATE.dailyDate); if(rec){ rec.notes=inp.value; await idbPut('attendance', rec);} };
+  });
+  document.querySelectorAll('[data-arrival]').forEach(inp=>{
+    inp.onchange = async ()=>{
+      const rec = attForStudentDate(inp.dataset.arrival, STATE.dailyDate);
+      if(!rec) return;
+      const v=toLatinDigits(inp.value.trim());
+      if(v!==''&&!validTimeStr(v)){ toast(t('invalidTime'),'err'); renderApp(); return; }
+      rec.arrivalTime=v; await idbPut('attendance', rec); renderApp();
+    };
+  });
+  document.querySelectorAll('[data-expected]').forEach(inp=>{
+    inp.onchange = async ()=>{
+      const rec = attForStudentDate(inp.dataset.expected, STATE.dailyDate);
+      if(!rec) return;
+      const v=toLatinDigits(inp.value.trim());
+      if(v!==''&&!validTimeStr(v)){ toast(t('invalidTime'),'err'); renderApp(); return; }
+      rec.expectedTime=v; await idbPut('attendance', rec); renderApp();
+    };
+  });
+  const pbtn = document.getElementById('printDailyBtn');
+  if(pbtn) pbtn.onclick = printDaily;
+  const bbtn = document.getElementById('printBlankBtn');
+  if(bbtn) bbtn.onclick = printBlank;
+  const dnote = document.getElementById('dailyNoteInput');
+  if(dnote) dnote.onchange = async ()=>{
+    const gg = groupById(STATE.dailyGroupId); if(!gg) return;
+    await saveMeta(dayNoteKey(gg.id, STATE.dailyDate), dnote.value);
+    toast(t('saved'),'ok');
+  };
+}
+
+/* ======================= 11. MONTHLY REGISTER VIEW ======================= */
+function statusCode(rec){
+  if(!rec) return '';
+  if(rec.status==='present') return '<span class="cell-check">✓</span>';
+  if(rec.status==='late') return '<span class="cell-r">R</span>';
+  if(rec.status==='absent') return rec.justified===true? '<span class="cell-x">AJ</span>' : '<span class="cell-x">ANJ</span>';
+  return '';
+}
+function viewMonthly(){
+  if(!STATE.monthlyGroupId && STATE.groups.length) STATE.monthlyGroupId = STATE.groups[0].id;
+  const g = groupById(STATE.monthlyGroupId);
+  const students = g? studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0)) : [];
+  const year = STATE.monthlyYear, month = STATE.monthlyMonth;
+  const days = monthDaysCount(year, month);
+  const dayNums = Array.from({length:days},(_,i)=>i+1);
+
+  let rows='';
+  students.forEach(s=>{
+    let abs=0, late=0, presentCnt=0, totalMarked=0;
+    let cells='';
+    dayNums.forEach(d=>{
+      const iso = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec = attForStudentDate(s.id, iso);
+      if(rec){ totalMarked++; if(rec.status==='absent') abs++; if(rec.status==='late') late++; if(rec.status==='present') presentCnt++; }
+      cells += `<td>${statusCode(rec)}</td>`;
+    });
+    const rate = totalMarked? Math.round((presentCnt/totalMarked)*100) : 0;
+    rows += `<tr><td>${escapeHtml(s.name)}</td>${cells}<td>${abs}</td><td>${late}</td><td>${rate}%</td></tr>`;
+  });
+
+  return `
+  <div class="page-header"><h2>${t('monthly_title')}</h2>
+    <div class="btn-row no-print"><button class="btn secondary" id="printMonthlyBtn">🖨️ ${t('print_monthly')}</button></div>
+  </div>
+  ${demoBanner()}
+  <div class="card no-print">
+    <div class="field-row">
+      <div class="field"><label>${t('group')}</label><select id="monthlyGroupSelect">${STATE.groups.map(gr=>`<option value="${gr.id}" ${gr.id===STATE.monthlyGroupId?'selected':''}>${escapeHtml(gr.name)}</option>`).join('')||`<option>${t('none')}</option>`}</select></div>
+      <div class="field"><label>${t('month')}</label><select id="monthlyMonthSelect">${t('months').map((m,i)=>`<option value="${i+1}" ${i+1===month?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('filterYear')}</label><input type="text" inputmode="numeric" id="monthlyYearInput" value="${year}"></div>
+    </div>
+  </div>
+  <div class="card">
+    ${!g? `<div class="empty-state">${t('selectGroupFirst')}</div>` :
+    (students.length? `<div class="table-wrap"><table><thead><tr><th>${t('th_name')}</th>${dayNums.map(d=>`<th>${d}</th>`).join('')}<th>${t('th_totalAbs')}</th><th>${t('th_totalLate')}</th><th>${t('th_presenceRate')}</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>` : `<div class="empty-state">${t('noData')}</div>`)}
+    <p class="small" style="margin-top:10px;">✓ ${t('th_present')} · AJ ${t('excusedAbs')} · ANJ ${t('unexcusedAbs')} · R ${t('th_late')}</p>
+  </div>`;
+}
+function afterMonthly(){
+  bindDemoBanner();
+  const gsel=document.getElementById('monthlyGroupSelect'); if(gsel) gsel.onchange=(e)=>{STATE.monthlyGroupId=e.target.value; renderApp();};
+  const msel=document.getElementById('monthlyMonthSelect'); if(msel) msel.onchange=(e)=>{STATE.monthlyMonth=parseInt(e.target.value); renderApp();};
+  const ysel=document.getElementById('monthlyYearInput'); if(ysel) ysel.onchange=(e)=>{ const yv=parseInt(toLatinDigits(e.target.value)); if(!isNaN(yv)&&yv>1900&&yv<2100) STATE.monthlyYear=yv; renderApp(); };
+  const pbtn=document.getElementById('printMonthlyBtn'); if(pbtn) pbtn.onclick=printMonthly;
+}
+
+/* ======================= 12. ANNUAL REGISTER VIEW ======================= */
+function viewAnnual(){
+  if(!STATE.annualGroupId && STATE.groups.length) STATE.annualGroupId = STATE.groups[0].id;
+  const g = groupById(STATE.annualGroupId);
+  const students = g? studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0)) : [];
+  const year = STATE.annualYear;
+  // school year months order: Sept..Jun (index in t('months') is Jan-based(0). Use academic order.)
+  const academicMonthIdx = [9,10,11,12,1,2,3,4,5,6]; // Sep..Jun (1-based month numbers)
+  const monthLabels = academicMonthIdx.map(m=>t('months')[m-1]);
+
+  let rows='';
+  students.forEach(s=>{
+    let tPres=0,tAbs=0,tExc=0,tUnexc=0,tLate=0,tMarked=0;
+    let cells='';
+    academicMonthIdx.forEach(m=>{
+      const y = m>=9? year : year+1;
+      const days = monthDaysCount(y,m);
+      let pres=0,abs=0,exc=0,unexc=0,late=0,marked=0;
+      for(let d=1; d<=days; d++){
+        const iso = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const rec = attForStudentDate(s.id, iso);
+        if(rec){ marked++; if(rec.status==='present') pres++; if(rec.status==='absent'){abs++; if(rec.justified===true) exc++; else unexc++;} if(rec.status==='late') late++; }
+      }
+      tPres+=pres; tAbs+=abs; tExc+=exc; tUnexc+=unexc; tLate+=late; tMarked+=marked;
+      cells += `<td style="font-size:11.5px;">${marked? `P:${pres} A:${abs}<br><span class="small">AJ:${exc} ANJ:${unexc} R:${late}</span>`:'-'}</td>`;
+    });
+    const rate = tMarked? Math.round((tPres/tMarked)*100):0;
+    rows += `<tr><td>${escapeHtml(s.name)}</td>${cells}<td style="font-size:12px;"><strong>P:${tPres} A:${tAbs} R:${tLate}</strong><br><span class="small">AJ:${tExc} ANJ:${tUnexc} (${rate}%)</span></td></tr>`;
+  });
+
+  return `
+  <div class="page-header"><h2>${t('annual_title')}</h2>
+    <div class="btn-row no-print"><button class="btn secondary" id="printAnnualBtn">🖨️ ${t('print_annual')}</button></div>
+  </div>
+  ${demoBanner()}
+  <div class="card no-print">
+    <div class="field-row">
+      <div class="field"><label>${t('group')}</label><select id="annualGroupSelect">${STATE.groups.map(gr=>`<option value="${gr.id}" ${gr.id===STATE.annualGroupId?'selected':''}>${escapeHtml(gr.name)}</option>`).join('')||`<option>${t('none')}</option>`}</select></div>
+      <div class="field"><label>${t('filterYear')} (${t('f_year')})</label><input type="text" inputmode="numeric" id="annualYearInput" value="${year}"></div>
+    </div>
+  </div>
+  <div class="card">
+  ${!g? `<div class="empty-state">${t('selectGroupFirst')}</div>` :
+   (students.length? `<div class="table-wrap"><table><thead><tr><th>${t('th_name')}</th>${monthLabels.map(m=>`<th>${m}</th>`).join('')}<th>${t('th_total')}</th></tr></thead>
+   <tbody>${rows}</tbody></table></div>` : `<div class="empty-state">${t('noData')}</div>`)}
+  </div>`;
+}
+function afterAnnual(){
+  bindDemoBanner();
+  const gsel=document.getElementById('annualGroupSelect'); if(gsel) gsel.onchange=(e)=>{STATE.annualGroupId=e.target.value; renderApp();};
+  const ysel=document.getElementById('annualYearInput'); if(ysel) ysel.onchange=(e)=>{ const yv=parseInt(toLatinDigits(e.target.value)); if(!isNaN(yv)&&yv>1900&&yv<2100) STATE.annualYear=yv; renderApp(); };
+  const pbtn=document.getElementById('printAnnualBtn'); if(pbtn) pbtn.onclick=printAnnual;
+}
+
+/* ======================= 13. HISTORY VIEW ======================= */
+function viewHistory(){
+  const f = STATE.historyFilters;
+  let recs = STATE.attendance.filter(r=>r.status==='absent'||r.status==='late');
+  if(f.group) recs = recs.filter(r=>r.groupId===f.group);
+  if(f.status) recs = recs.filter(r=>r.status===f.status);
+  if(f.justified==='1') recs = recs.filter(r=>r.status==='absent'&&r.justified===true);
+  if(f.justified==='0') recs = recs.filter(r=>r.status==='absent'&&r.justified!==true);
+  if(f.month) recs = recs.filter(r=>r.date.slice(5,7)===String(f.month).padStart(2,'0'));
+  if(f.year) recs = recs.filter(r=>r.date.slice(0,4)===String(f.year));
+  if(f.name){
+    const qn=f.name.toLowerCase();
+    recs=recs.filter(r=>{ const s=studentById(r.studentId); return s && s.name.toLowerCase().includes(qn); });
+  }
+  recs = recs.slice().sort((a,b)=>b.date.localeCompare(a.date));
+
+  return `
+  <div class="page-header"><h2>${t('history_title')}</h2></div>
+  ${demoBanner()}
+  <div class="card no-print">
+    <h3>${t('filters')}</h3>
+    <div class="search-bar"><input id="hf_name" placeholder="${t('studentSearchPh')}" value="${escapeHtml(f.name||'')}"></div>
+    <div class="field-row">
+      <div class="field"><label>${t('filterGroup')}</label><select id="hf_group"><option value="">${t('all')}</option>${STATE.groups.map(g=>`<option value="${g.id}" ${f.group===g.id?'selected':''}>${escapeHtml(g.name)}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('filterStatus')}</label><select id="hf_status">
+        <option value="">${t('all')}</option><option value="absent" ${f.status==='absent'?'selected':''}>${t('th_absent')}</option><option value="late" ${f.status==='late'?'selected':''}>${t('th_late')}</option>
+      </select></div>
+      <div class="field"><label>${t('th_justified')}</label><select id="hf_justified">
+        <option value="">${t('all')}</option><option value="1" ${f.justified==='1'?'selected':''}>${t('filterJustified')}</option><option value="0" ${f.justified==='0'?'selected':''}>${t('filterUnjustified')}</option>
+      </select></div>
+      <div class="field"><label>${t('filterMonth')}</label><select id="hf_month"><option value="">${t('all')}</option>${t('months').map((m,i)=>`<option value="${i+1}" ${String(f.month)===String(i+1)?'selected':''}>${m}</option>`).join('')}</select></div>
+      <div class="field"><label>${t('filterYear')}</label><input type="text" inputmode="numeric" id="hf_year" value="${f.year||''}" placeholder="${t('all')}"></div>
+    </div>
+  </div>
+  <div class="card">
+    ${recs.length? `<div class="table-wrap"><table><thead><tr>
+      <th>${t('th_date')}</th><th>${t('th_student')}</th><th>${t('th_group')}</th><th>${t('th_status')}</th><th>${t('th_justified')}</th><th>${t('th_time')}</th><th>${t('th_reason')}</th><th>${t('observationLabel')}</th>
+    </tr></thead><tbody>${recs.map(r=>{
+      const s = studentById(r.studentId); const g = groupById(r.groupId);
+      return `<tr><td>${fmtDate(r.date)}</td><td>${s?escapeHtml(s.name):'-'}</td><td>${g?escapeHtml(g.name):'-'}</td><td>${statusBadge(r.status)}</td>
+      <td>${r.status==='absent'? (r.justified? t('yes'):t('no')) : '-'}</td><td>${r.status==='late'? (r.arrivalTime||'-'):'-'}</td>
+      <td>${escapeHtml(r.reason||'')}</td><td>${escapeHtml(r.notes||'')}</td></tr>`;
+    }).join('')}</tbody></table></div>` : `<div class="empty-state">${t('noHistory')}</div>`}
+  </div>`;
+}
+function afterHistory(){
+  bindDemoBanner();
+  const bind=(id,key,parse)=>{ const el=document.getElementById(id); if(el) el.onchange=(e)=>{STATE.historyFilters[key]= parse? parse(e.target.value): e.target.value; renderApp();}; };
+  bind('hf_group','group'); bind('hf_status','status'); bind('hf_justified','justified'); bind('hf_month','month');
+  const hyr=document.getElementById('hf_year'); if(hyr) hyr.onchange=(e)=>{ STATE.historyFilters.year=toLatinDigits(e.target.value).trim(); renderApp(); };
+  const hn=document.getElementById('hf_name'); if(hn) hn.oninput=(e)=>{STATE.historyFilters.name=e.target.value; renderApp(); const n2=document.getElementById('hf_name'); if(n2){n2.focus(); n2.selectionStart=n2.value.length;}};
+}
+
+/* ======================= 14. STATISTICS VIEW ======================= */
+function viewStats(){
+  const totalStudents = STATE.students.length;
+  const allAbs = STATE.attendance.filter(r=>r.status==='absent').length;
+  const allLate = STATE.attendance.filter(r=>r.status==='late').length;
+  const allPresent = STATE.attendance.filter(r=>r.status==='present').length;
+  const totalMarked = STATE.attendance.length;
+  const globalRate = totalMarked? Math.round((allPresent/totalMarked)*100):0;
+
+  const byGroup = STATE.groups.map(g=>{
+    const gStudents = studentsOfGroup(g.id);
+    const gRecs = STATE.attendance.filter(r=>r.groupId===g.id);
+    const gAbs = gRecs.filter(r=>r.status==='absent').length;
+    const gLate = gRecs.filter(r=>r.status==='late').length;
+    const gPresent = gRecs.filter(r=>r.status==='present').length;
+    const gRate = gRecs.length? Math.round((gPresent/gRecs.length)*100):0;
+    return {g, count:gStudents.length, abs:gAbs, late:gLate, rate:gRate};
+  });
+
+  return `
+  <div class="page-header"><h2>${t('nav_stats')}</h2></div>
+  ${demoBanner()}
+  <div class="card"><h3>${t('year_stats')}</h3>
+    <div class="grid grid-4">
+      <div class="stat-card blue"><div class="num">${totalStudents}</div><div class="lbl">${t('total_students')}</div></div>
+      <div class="stat-card red"><div class="num">${allAbs}</div><div class="lbl">${t('absences')}</div></div>
+      <div class="stat-card orange"><div class="num">${allLate}</div><div class="lbl">${t('lates')}</div></div>
+      <div class="stat-card green"><div class="num">${globalRate}%</div><div class="lbl">${t('attendanceRate')}</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>${t('nav_groups')}</h3>
+    ${byGroup.length? `<div class="table-wrap"><table><thead><tr><th>${t('g_name')}</th><th>${t('total_students')}</th><th>${t('th_totalAbs')}</th><th>${t('th_totalLate')}</th><th>${t('th_presenceRate')}</th></tr></thead>
+    <tbody>${byGroup.map(x=>`<tr><td>${escapeHtml(x.g.name)}</td><td>${x.count}</td><td>${x.abs}</td><td>${x.late}</td><td>${x.rate}%</td></tr>`).join('')}</tbody></table></div>`
+    : `<div class="empty-state">${t('noGroups')}</div>`}
+  </div>`;
+}
+function afterStats(){ bindDemoBanner(); }
+
+/* ======================= 15. SETTINGS VIEW ======================= */
+function viewSettings(){
+  const m = STATE.meta;
+  return `
+  <div class="page-header"><h2>${t('settings_title')}</h2></div>
+  ${demoBanner()}
+  <div class="card"><h3>${t('general_info')}</h3>
+    <div class="field-row">
+      <div class="field"><label>${t('f_schoolName')}</label><input id="st_schoolName" value="${escapeHtml(m.schoolName||'')}"></div>
+      <div class="field"><label>${t('f_schoolType')}</label><input id="st_schoolType" placeholder="${t('schoolTypePlaceholder')}" value="${escapeHtml(m.schoolType||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('f_municipality')}</label><input id="st_municipality" value="${escapeHtml(m.municipality||'')}"></div>
+      <div class="field"><label>${t('f_province')}</label><input id="st_province" value="${escapeHtml(m.province||'')}"></div>
+      <div class="field"><label>${t('f_year')}</label><input id="st_year" value="${escapeHtml(m.year||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('f_teacherName')}</label><input id="st_teacherName" value="${escapeHtml(m.teacherName||'')}"></div>
+      <div class="field"><label>${t('f_subject')}</label><input id="st_subject" value="${escapeHtml(m.subject||'')}"></div>
+      <div class="field"><label>${t('f_grade')}</label><input id="st_grade" value="${escapeHtml(m.grade||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('f_classGroup')}</label><input id="st_classGroup" value="${escapeHtml(m.classGroup||'')}"></div>
+      <div class="field"><label>${t('f_classroom')}</label><input id="st_classroom" value="${escapeHtml(m.classroom||'')}"></div>
+      <div class="field"><label>${t('f_registerNumber')}</label><input id="st_registerNumber" value="${escapeHtml(m.registerNumber||'')}"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>${t('defaultClassTime')}</label><input id="st_defaultClassTime" type="text" inputmode="numeric" placeholder="08:00" value="${escapeHtml(m.defaultClassTime||'08:00')}"></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="saveSettingsBtn">💾 ${t('save')}</button></div>
+  </div>
+  <div class="card"><h3>📱 ${t('pwaTitle')}</h3>
+    <p class="small">${t('pwaDesc')}</p>
+    <p class="small" id="pwaStatusLine"></p>
+    <div class="btn-row">
+      <button class="btn success" id="pwaInstallBtn">📲 ${t('installApp')}</button>
+    </div>
+    <details style="margin-top:10px;"><summary class="small">iPhone / iOS</summary>
+      <p class="small">${t('pwaIosHelp')}</p>
+    </details>
+    <p class="small" style="margin-top:8px;opacity:.8;">${t('pwaOfflineNote')}</p>
+  </div>
+  <div class="card"><h3>🔒 ${t('pwTitle')}</h3>
+    <p class="small">${t('pwDesc')}</p>
+    ${STATE.meta.pwHash? `
+    <div class="field-row">
+      <div class="field"><label>${t('pwCurrent')}</label><input id="pw_cur" type="password"></div>
+      <div class="field"><label>${t('pwNew')}</label><input id="pw_new2" type="password"></div>
+      <div class="field"><label>${t('pwConfirm')}</label><input id="pw_confirm2" type="password"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="pwChangeBtn">${t('pwChange')}</button>
+      <button class="btn danger" id="pwRemoveBtn">${t('pwRemove')}</button>
+    </div>` : `
+    <div class="field-row">
+      <div class="field"><label>${t('pwNew')}</label><input id="pw_new" type="password"></div>
+      <div class="field"><label>${t('pwConfirm')}</label><input id="pw_confirm" type="password"></div>
+    </div>
+    <div class="btn-row"><button class="btn" id="pwSetBtn">${t('pwSet')}</button></div>`}
+  </div>
+  <div class="card"><h3>⚠️ ${t('alertTitle')}</h3>
+    <div class="field" style="max-width:240px;"><label>${t('alertThreshold')}</label><input id="st_alertThreshold" type="text" inputmode="numeric" value="${parseInt(STATE.meta.alertThreshold||'3')}"></div>
+    <div class="btn-row"><button class="btn" id="saveAlertBtn">💾 ${t('save')}</button></div>
+  </div>
+  <div class="card"><h3>${t('removeDemoData')}</h3>
+    <p class="small">${STATE.meta.isDemo? t('demoNotice') : t('noData')}</p>
+    ${STATE.meta.isDemo? `<button class="btn orange" id="settingsRemoveDemoBtn">🗑️ ${t('removeDemoData')}</button>`:''}
+  </div>`;
+}
+function afterSettings(){
+  document.getElementById('saveSettingsBtn').onclick = async ()=>{
+    const dtcEl=document.getElementById('st_defaultClassTime');
+    const dtc=toLatinDigits(dtcEl.value.trim());
+    if(dtc&&!validTimeStr(dtc)){ toast(t('invalidTime'),'err'); return; }
+    dtcEl.value=dtc;
+    const fields = ['schoolName','schoolType','municipality','province','year','teacherName','subject','grade','classGroup','classroom','registerNumber','defaultClassTime'];
+    for(const f of fields){ await saveMeta(f, document.getElementById('st_'+f).value.trim()); }
+    toast(t('saved'),'ok'); renderApp();
+  };
+  const rd = document.getElementById('settingsRemoveDemoBtn');
+  if(rd) rd.onclick = ()=>{
+    confirmAction(t('confirmDemoDelete'), async ()=>{
+      try{ await takeSnapshot(); }catch(e){}
+      await idbClear('groups'); await idbClear('students'); await idbClear('attendance');
+      await saveMeta('isDemo', false); await loadAll();
+      toast(t('demoDataDeletedMsg'),'ok'); renderApp();
+    }, true);
+  };
+  bindPwaButton('pwaInstallBtn', 'pwaStatusLine');
+  const setB = document.getElementById('pwSetBtn');
+  if(setB) setB.onclick = async ()=>{
+    const a=document.getElementById('pw_new').value, b=document.getElementById('pw_confirm').value;
+    if(!a){ toast(t('required'),'err'); return; }
+    if(a!==b){ toast(t('pwMismatch'),'err'); return; }
+    const salt=uid();
+    await saveMeta('pwSalt', salt);
+    await saveMeta('pwHash', await sha256hex(salt+'::'+a));
+    UNLOCKED=true; toast(t('pwSaved'),'ok'); renderApp();
+  };
+  const chB = document.getElementById('pwChangeBtn');
+  if(chB) chB.onclick = async ()=>{
+    const cur=document.getElementById('pw_cur').value;
+    const h=await sha256hex((STATE.meta.pwSalt||'')+'::'+cur);
+    if(h!==STATE.meta.pwHash){ toast(t('pwWrong'),'err'); return; }
+    const a=document.getElementById('pw_new2').value, b=document.getElementById('pw_confirm2').value;
+    if(!a){ toast(t('required'),'err'); return; }
+    if(a!==b){ toast(t('pwMismatch'),'err'); return; }
+    const salt=uid();
+    await saveMeta('pwSalt', salt);
+    await saveMeta('pwHash', await sha256hex(salt+'::'+a));
+    toast(t('pwSaved'),'ok'); renderApp();
+  };
+  const rmB = document.getElementById('pwRemoveBtn');
+  if(rmB) rmB.onclick = async ()=>{
+    const cur=document.getElementById('pw_cur').value;
+    const h=await sha256hex((STATE.meta.pwSalt||'')+'::'+cur);
+    if(h!==STATE.meta.pwHash){ toast(t('pwWrong'),'err'); return; }
+    await saveMeta('pwHash', ''); await saveMeta('pwSalt', '');
+    UNLOCKED=false; toast(t('pwRemoved'),'ok'); renderApp();
+  };
+  const alB = document.getElementById('saveAlertBtn');
+  if(alB) alB.onclick = async ()=>{
+    let v=parseInt(toLatinDigits(document.getElementById('st_alertThreshold').value));
+    if(isNaN(v)||v<1) v=3; if(v>30) v=30;
+    await saveMeta('alertThreshold', v);
+    toast(t('saved'),'ok'); renderApp();
+  };
+}
+
+/* ======================= 16. BACKUP VIEW ======================= */
+function viewBackup(){
+  return `
+  <div class="page-header"><h2>${t('backup_title')}</h2></div>
+  ${demoBanner()}
+  <div class="card"><h3>JSON</h3>
+    <div class="btn-row">
+      <button class="btn" id="exportJsonBtn">⬇️ ${t('exportBackup')}</button>
+      <label class="btn secondary" style="margin:0;">⬆️ ${t('importBackup')}<input type="file" id="importJsonFile" accept=".json" style="display:none;"></label>
+    </div>
+  </div>
+  <div class="card"><h3>CSV — ${t('nav_students')}</h3>
+    <div class="btn-row">
+      <button class="btn secondary" id="exportCsvBtn2">⬇️ ${t('exportCsvStudents')}</button>
+      <label class="btn secondary" style="margin:0;">⬆️ ${t('importCsvStudents')}<input type="file" id="importCsvFile2" accept=".csv" style="display:none;"></label>
+    </div>
+  </div>
+  <div class="card"><h3>🗜️ ${t('zipBackup')}</h3>
+    <p class="small">${t('zipDesc')}</p>
+    <div class="btn-row"><button class="btn secondary" id="exportZipBtn">⬇️ ${t('zipBackup')}</button></div>
+  </div>
+  <div class="card"><h3>🔄 ${t('autoBackup')}</h3>
+    <p class="small">${t('autoBackupDesc')}</p>
+    <div class="field-row">
+      <div class="field"><label>${t('autoBackup')}</label>
+        <select id="ab_enabled"><option value="on" ${STATE.meta.autoBackup!=='off'?'selected':''}>${t('autoOn')}</option><option value="off" ${STATE.meta.autoBackup==='off'?'selected':''}>${t('autoOff')}</option></select>
+      </div>
+      <div class="field"><label>${t('autoEvery')}</label><input id="ab_days" type="text" inputmode="numeric" value="${autoIntervalDays()}"></div>
+    </div>
+    <p class="small">${t('lastAuto')}: ${fmtDT(STATE.meta._sysLastSnap)}</p>
+    <div class="btn-row">
+      <button class="btn" id="ab_saveBtn">💾 ${t('save')}</button>
+      <button class="btn secondary" id="ab_nowBtn">⬇️ ${t('backupNow')}</button>
+    </div>
+    <h4 style="margin-top:14px;">${t('snapshotsTitle')}</h4>
+    <div id="snapList"></div>
+  </div>`;
+}
+function afterBackup(){
+  bindDemoBanner();
+  document.getElementById('exportJsonBtn').onclick = ()=>{
+    downloadBlob(new Blob([JSON.stringify(buildBackupData(),null,2)], {type:'application/json'}), 'backup_registre_presence.json');
+  };
+  document.getElementById('importJsonFile').onchange = (e)=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev)=>{
+      try{
+        const data = JSON.parse(ev.target.result);
+        confirmAction(t('confirmDelete'), async ()=>{
+          await importBackupData(data);
+          toast(t('backupImported'),'ok'); renderApp();
+        }, true);
+      }catch(err){ toast('Error: '+err.message,'err'); }
+    };
+    reader.readAsText(file);
+  };
+  document.getElementById('exportCsvBtn2').onclick = exportStudentsCsv;
+  document.getElementById('importCsvFile2').onchange = importStudentsCsv;
+  document.getElementById('exportZipBtn').onclick = ()=>{
+    const enc = new TextEncoder();
+    const files = [
+      {name:'backup_registre.json', data:enc.encode(JSON.stringify(buildBackupData()))},
+      {name:'eleves.csv', data:enc.encode('\uFEFF'+studentsCsvString())},
+    ];
+    downloadBlob(buildZip(files), 'sauvegarde_registre.zip');
+    toast(t('saved'),'ok');
+  };
+  document.getElementById('ab_saveBtn').onclick = async ()=>{
+    let d=parseInt(toLatinDigits(document.getElementById('ab_days').value));
+    if(isNaN(d)||d<1) d=7; if(d>60) d=60;
+    await saveMeta('autoBackupDays', d);
+    await saveMeta('autoBackup', document.getElementById('ab_enabled').value);
+    toast(t('saved'),'ok'); renderApp();
+  };
+  document.getElementById('ab_nowBtn').onclick = async ()=>{
+    await takeSnapshot();
+    toast(t('snapSaved'),'ok'); renderApp();
+  };
+  refreshSnapList();
+}
+async function refreshSnapList(){
+  const el=document.getElementById('snapList'); if(!el) return;
+  let all=[];
+  try{ all=(await idbGetAll('snapshots')).sort((a,b)=>(b.ts||0)-(a.ts||0)); }catch(e){}
+  el.innerHTML = all.length? `<div class="table-wrap"><table><thead><tr><th>${t('th_date')}</th><th>${t('actions')}</th></tr></thead>
+    <tbody>${all.map(s=>`<tr><td>${fmtDT(s.ts)}</td><td>
+      <button class="btn sm secondary" data-snap-restore="${s.id}">${t('restore')}</button>
+      <button class="btn sm secondary" data-snap-dl="${s.id}">⬇️ JSON</button>
+      <button class="btn sm danger" data-snap-del="${s.id}">🗑️</button>
+    </td></tr>`).join('')}</tbody></table></div>`
+    : `<div class="empty-state">${t('noSnapshots')}</div>`;
+  el.querySelectorAll('[data-snap-restore]').forEach(b=>b.onclick=()=>{
+    confirmAction(t('confirmDelete'), async ()=>{
+      const rec=await idbGet('snapshots', b.dataset.snapRestore);
+      if(!rec) return;
+      await importBackupData(rec.data);
+      toast(t('snapRestored'),'ok'); renderApp();
+    }, true);
+  });
+  el.querySelectorAll('[data-snap-dl]').forEach(b=>b.onclick=async ()=>{
+    const rec=await idbGet('snapshots', b.dataset.snapDl);
+    if(!rec) return;
+    downloadBlob(new Blob([JSON.stringify(rec.data,null,2)],{type:'application/json'}), 'snapshot_'+(rec.createdAt||'backup').replace(/[:.]/g,'-')+'.json');
+  });
+  el.querySelectorAll('[data-snap-del]').forEach(b=>b.onclick=()=>{
+    confirmAction(t('confirmDelete'), async ()=>{
+      await idbDelete('snapshots', b.dataset.snapDel);
+      toast(t('snapDeleted'),'ok'); renderApp();
+    }, true);
+  });
+}
+
+/* ======================= 17. PRINT FUNCTIONS ======================= */
+function doPrint(html, landscape){
+  const area = document.getElementById('printArea');
+  area.innerHTML = html;
+  document.body.classList.toggle('print-landscape-mode', !!landscape);
+  if(landscape){
+    let styleTag = document.getElementById('printOrientStyle');
+    if(!styleTag){ styleTag = document.createElement('style'); styleTag.id='printOrientStyle'; document.head.appendChild(styleTag); }
+    styleTag.textContent = '@media print { @page { size: A4 landscape; margin:10mm; } }';
+  } else {
+    const styleTag = document.getElementById('printOrientStyle'); if(styleTag) styleTag.textContent='@media print { @page { size: A4; margin:14mm; } }';
+  }
+  window.print();
+}
+function printHeaderHtml(g){
+  const m = STATE.meta;
+  return `<div style="margin-bottom:10px;"><h2 style="margin:0;">${escapeHtml(m.schoolName||'')}</h2>
+    <p style="margin:2px 0;">${t('teacher')}: ${escapeHtml(g?g.teacher:m.teacherName||'')} — ${t('subject')}: ${escapeHtml(g?g.subject:m.subject||'')} — ${t('group')}: ${escapeHtml(g?g.name:'')} — ${t('year')}: ${escapeHtml(g?g.year:m.year||'')}</p></div>`;
+}
+function printDaily(){
+  const g = groupById(STATE.dailyGroupId); if(!g){ toast(t('selectGroupFirst'),'err'); return; }
+  const students = studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0));
+  const date = STATE.dailyDate;
+  let rows = students.map(s=>{
+    const rec = attForStudentDate(s.id, date)||{};
+    const prevAbs = computeStudentStats(s.id, a=>a.date<date && a.status==='absent').absences;
+    return `<tr><td>${s.number}</td><td>${escapeHtml(s.name)}</td><td>${fmtDate(s.dob)}</td><td>${s.repeater?t('repeaterYes'):t('repeaterNo')}</td>
+      <td>${rec.status==='present'?'✓':''}</td><td>${rec.status==='absent'?'A':''}</td><td>${rec.status==='late'?'R':''}</td><td>${prevAbs}</td><td>${rec.status==='absent'?(rec.justified?t('yes'):t('no')):''}</td>
+      <td>${rec.arrivalTime||''}${rec.expectedTime&&rec.status==='late'?' ('+rec.expectedTime+')':''}</td><td>${escapeHtml(rec.reason||'')}</td><td>${escapeHtml(rec.notes||'')}</td></tr>`;
+  }).join('');
+  const html = `${printHeaderHtml(g)}<h3>${t('daily_title')} — ${fmtDate(date)} (${dayName(date)})</h3>
+    ${dayNoteGet(g.id,date)?`<p><strong>${t('dayNote')}:</strong> ${escapeHtml(dayNoteGet(g.id,date))}</p>`:''}
+    <table><thead><tr><th>${t('th_no')}</th><th>${t('th_name')}</th><th>${t('th_dob')}</th><th>${t('th_repeater')}</th>
+    <th>${t('th_present')}</th><th>${t('th_absent')}</th><th>${t('th_late')}</th><th>${t('th_prevAbsence')}</th><th>${t('th_excused')}</th><th>${t('th_arrival')}</th><th>${t('th_reason')}</th><th>${t('th_notes')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  doPrint(html, true);
+}
+function printBlank(){
+  const g = groupById(STATE.dailyGroupId); if(!g){ toast(t('selectGroupFirst'),'err'); return; }
+  const students = studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0));
+  const date = STATE.dailyDate;
+  const n = Math.max(students.length, 10);
+  let rows='';
+  for(let i=0;i<n;i++){
+    const s=students[i];
+    rows+=`<tr><td>${i+1}</td><td style="min-width:170px;">${s?escapeHtml(s.name):''}</td>
+      <td style="text-align:center;">☐</td><td style="text-align:center;">☐</td><td style="text-align:center;">☐</td>
+      <td style="min-width:130px;"></td><td style="min-width:110px;"></td></tr>`;
+  }
+  const html = `${printHeaderHtml(g)}<h3>${t('blankSheet')} — ${fmtDate(date)} (${dayName(date)})</h3>
+    <table><thead><tr><th>${t('th_no')}</th><th>${t('th_name')}</th><th>${t('th_present')}</th><th>${t('th_absent')}</th><th>${t('th_late')}</th><th>${t('th_reason')}</th><th>${t('signature')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div style="display:flex;justify-content:space-between;margin-top:22px;"><span>${t('teacher')}: ............................</span><span>${t('signature')}: ............................</span></div>`;
+  doPrint(html, true);
+}
+function printMonthly(){
+  const g = groupById(STATE.monthlyGroupId); if(!g){ toast(t('selectGroupFirst'),'err'); return; }
+  const students = studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0));
+  const year=STATE.monthlyYear, month=STATE.monthlyMonth, days=monthDaysCount(year,month);
+  const dayNums = Array.from({length:days},(_,i)=>i+1);
+  let rows = students.map(s=>{
+    let abs=0,late=0,pres=0,marked=0;
+    let cells = dayNums.map(d=>{
+      const iso = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec = attForStudentDate(s.id, iso);
+      if(rec){marked++; if(rec.status==='absent')abs++; if(rec.status==='late')late++; if(rec.status==='present')pres++;}
+      return `<td>${statusCode(rec)}</td>`;
+    }).join('');
+    const rate = marked? Math.round((pres/marked)*100):0;
+    return `<tr><td>${escapeHtml(s.name)}</td>${cells}<td>${abs}</td><td>${late}</td><td>${rate}%</td></tr>`;
+  }).join('');
+  const html = `${printHeaderHtml(g)}<h3>${t('monthly_title')} — ${t('months')[month-1]} ${year}</h3>
+    <table><thead><tr><th>${t('th_name')}</th>${dayNums.map(d=>`<th>${d}</th>`).join('')}<th>${t('th_totalAbs')}</th><th>${t('th_totalLate')}</th><th>${t('th_presenceRate')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  doPrint(html, true);
+}
+function printAnnual(){
+  const g = groupById(STATE.annualGroupId); if(!g){ toast(t('selectGroupFirst'),'err'); return; }
+  const students = studentsOfGroup(g.id).sort((a,b)=>(a.number||0)-(b.number||0));
+  const year = STATE.annualYear;
+  const academicMonthIdx = [9,10,11,12,1,2,3,4,5,6];
+  const monthLabels = academicMonthIdx.map(m=>t('months')[m-1]);
+  let rows = students.map(s=>{
+    let tPres=0,tAbs=0,tExc=0,tUnexc=0,tLate=0,tMarked=0;
+    let cells = academicMonthIdx.map(m=>{
+      const y = m>=9? year: year+1; const days = monthDaysCount(y,m);
+      let abs=0,late=0,pres=0,exc=0,unexc=0,marked=0;
+      for(let d=1; d<=days; d++){
+        const iso = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const rec = attForStudentDate(s.id, iso);
+        if(rec){marked++; if(rec.status==='present')pres++; if(rec.status==='absent'){abs++; if(rec.justified===true)exc++; else unexc++;} if(rec.status==='late')late++;}
+      }
+      tPres+=pres; tAbs+=abs; tExc+=exc; tUnexc+=unexc; tLate+=late; tMarked+=marked;
+      return `<td>P:${pres} A:${abs} R:${late}<br>AJ:${exc} ANJ:${unexc}</td>`;
+    }).join('');
+    const rate = tMarked? Math.round((tPres/tMarked)*100):0;
+    return `<tr><td>${escapeHtml(s.name)}</td>${cells}<td>P:${tPres} A:${tAbs} R:${tLate} AJ:${tExc} ANJ:${tUnexc} (${rate}%)</td></tr>`;
+  }).join('');
+  const html = `${printHeaderHtml(g)}<h3>${t('annual_title')} — ${year}/${year+1}</h3>
+    <table><thead><tr><th>${t('th_name')}</th>${monthLabels.map(m=>`<th>${m}</th>`).join('')}<th>${t('th_total')}</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+  doPrint(html, true);
+}
+function printStudentCard(s, stats, recs){
+  const g = groupById(s.groupId);
+  const html = `${printHeaderHtml(g)}<h3>${t('student_card')} — ${escapeHtml(s.name)}</h3>
+    <p>${t('th_group')}: ${escapeHtml(groupName(g))} · ${t('th_dob')}: ${fmtDate(s.dob)}</p>
+    <table><thead><tr><th>${t('presences')}</th><th>${t('absences')}</th><th>${t('lates')}</th><th>${t('excusedAbs')}</th><th>${t('unexcusedAbs')}</th><th>${t('attendanceRate')}</th></tr></thead>
+    <tbody><tr><td>${stats.presences}</td><td>${stats.absences}</td><td>${stats.lates}</td><td>${stats.excused}</td><td>${stats.unexcused}</td><td>${stats.rate}%</td></tr></tbody></table>
+    <h4>${t('fullHistory')}</h4>
+    <table><thead><tr><th>${t('th_date')}</th><th>${t('th_status')}</th><th>${t('th_justified')}</th><th>${t('th_reason')}</th></tr></thead>
+    <tbody>${recs.map(r=>`<tr><td>${fmtDate(r.date)}</td><td>${r.status}</td><td>${r.status==='absent'?(r.justified?t('yes'):t('no')):'-'}</td><td>${escapeHtml(r.reason||'')}</td></tr>`).join('')}</tbody></table>`;
+  doPrint(html, false);
+}
+
+/* ======================= 18. DEMO DATA ======================= */
+async function seedDemoData(){
+  const g1 = {id:uid(), name:'Groupe 1', level:'CM1', class:'A', teacher:'Amel Benali', subject:'Toutes matières', classroom:'Salle 3', year:'2025/2026'};
+  const g2 = {id:uid(), name:'Groupe 2', level:'CM2', class:'B', teacher:'Amel Benali', subject:'Toutes matières', classroom:'Salle 5', year:'2025/2026'};
+  await idbPut('groups', g1); await idbPut('groups', g2);
+  STATE.groups.push(g1, g2);
+
+  const names1 = ['Yasmine Kaddour','Riad Boumediene','Sara Cherif','Mohamed Larbi','Nour Amrani','Adam Belkacem'];
+  const names2 = ['Lina Meziane','Karim Saadi','Imane Ghoul','Younes Ferhat','Ines Bouzid','Bilal Nacer'];
+  let num=1;
+  const demoStudents=[];
+  names1.forEach((n,i)=>{ const s={id:uid(),number:num++,name:n,dob:`2015-0${(i%9)+1}-1${i}`,repeater:i%4===0,groupId:g1.id}; demoStudents.push(s); });
+  names2.forEach((n,i)=>{ const s={id:uid(),number:num++,name:n,dob:`2014-0${(i%9)+1}-0${i+1}`,repeater:i%5===0,groupId:g2.id}; demoStudents.push(s); });
+  for(const s of demoStudents){ await idbPut('students', s); STATE.students.push(s); }
+
+  // demo attendance for last 10 school days
+  const today = new Date();
+  let daysAdded=0, cursor=new Date(today);
+  const demoAttendance=[];
+  while(daysAdded<10){
+    cursor.setDate(cursor.getDate()-1);
+    const dow = cursor.getDay();
+    if(dow===5||dow===6) continue; // skip Fri/Sat (Algeria weekend approx)
+    const iso = cursor.toISOString().slice(0,10);
+    demoStudents.forEach((s,idx)=>{
+      let status='present', justified=null, reason='', arrivalTime='', expectedTime='08:00';
+      const roll = (idx+daysAdded)%9;
+      if(roll===0){ status='absent'; justified = idx%2===0; reason = justified? 'Maladie':''; }
+      else if(roll===1){ status='late'; arrivalTime='08:1'+(idx%5); reason='Transport'; }
+      demoAttendance.push({id:uid(), studentId:s.id, groupId:s.groupId, date:iso, status, justified, reason, notes:'', arrivalTime, expectedTime});
+    });
+    daysAdded++;
+  }
+  for(const a of demoAttendance){ await idbPut('attendance', a); STATE.attendance.push(a); }
+
+  await saveMeta('schoolName','École Primaire El Amal');
+  await saveMeta('schoolType','Primaire');
+  await saveMeta('municipality','Batna');
+  await saveMeta('province','Batna');
+  await saveMeta('year','2025/2026');
+  await saveMeta('teacherName','Amel Benali');
+  await saveMeta('subject','Toutes matières');
+  await saveMeta('grade','CM1/CM2');
+  await saveMeta('classGroup','Groupe 1');
+  await saveMeta('classroom','Salle 3');
+  await saveMeta('registerNumber','REG-2025-001');
+  await saveMeta('isDemo', true);
+}
+
+/* ======================= 18b. PWA (install + offline) =======================
+   Single HTML stays autonomous (IndexedDB offline).
+   When served over http(s) with manifest.webmanifest + sw.js alongside,
+   the app becomes installable and cached by the Service Worker. */
+var deferredPwaPrompt = null;
+function isStandaloneMode(){
+  try{
+    if(window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+    if(window.navigator && window.navigator.standalone === true) return true; // iOS
+    if(new URLSearchParams(location.search).get('pwa')==='1') return true;
+  }catch(e){}
+  return false;
+}
+function updatePwaStatus(lineId){
+  const el = lineId ? document.getElementById(lineId) : null;
+  if(!el) return;
+  if(isStandaloneMode()) el.textContent = '✅ ' + t('pwaInstalled');
+  else if(deferredPwaPrompt) el.textContent = '⬇️ ' + t('pwaDesc');
+  else el.textContent = 'ℹ️ ' + t('pwaNotEligible');
+}
+async function triggerPwaInstall(){
+  if(deferredPwaPrompt){
+    try{ deferredPwaPrompt.prompt(); await deferredPwaPrompt.userChoice; }
+    catch(e){}
+    deferredPwaPrompt = null;
+    updatePwaStatus('pwaStatusLine');
+    return;
+  }
+  toast(t('pwaNotEligible'), 'err');
+}
+function bindPwaButton(btnId, lineId){
+  const b = btnId ? document.getElementById(btnId) : null;
+  if(b) b.onclick = triggerPwaInstall;
+  updatePwaStatus(lineId);
+}
+function setupPWA(){
+  window.addEventListener('beforeinstallprompt', (e)=>{
+    e.preventDefault();
+    deferredPwaPrompt = e;
+    updatePwaStatus('pwaStatusLine');
+  });
+  window.addEventListener('appinstalled', ()=>{
+    deferredPwaPrompt = null;
+    try{ toast(t('pwaInstalled'), 'ok'); }catch(e){}
+    updatePwaStatus('pwaStatusLine');
+  });
+  // Service Worker only works over http(s), never file:// — keep silent fallback.
+  try{
+    if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+      window.addEventListener('load', ()=>{
+        navigator.serviceWorker.register('./sw.js').catch(()=>{});
+      });
+    }
+  }catch(e){}
+}
+
+/* ======================= 19. INIT ======================= */
+async function init(){
+  try{ const th=localStorage.getItem('rpt_theme'); if(th) document.documentElement.dataset.theme=th; }catch(e){}
+  try{
+    await openDB();
+  }catch(e){ renderFatalDbError(e); return; }
+  try{
+    await loadAll();
+    if(STATE.meta.isDemo === undefined){
+      // first launch: seed demo data once
+      await seedDemoData();
+    }
+    document.documentElement.lang = LANG;
+    document.documentElement.dir = I18N[LANG].dir;
+    setupPWA();
+    setupAutoBackup();
+    renderApp();
+  }catch(e){ renderFatalDbError(e); }
+}
+init();
+</script>
+</body>
+</html>

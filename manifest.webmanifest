@@ -1,0 +1,41 @@
+{
+  "name": "Registre Scolaire – السجل المدرسي – School Register",
+  "short_name": "Registre Scolaire",
+  "description": "Registre scolaire de présence trilingue (ar/fr/en), hors ligne. سجل مدرسي للحضور يعمل دون إنترنت. Offline trilingual school attendance register.",
+  "id": "./registre_presence_trilingue.html",
+  "start_url": "./registre_presence_trilingue.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "dir": "auto",
+  "lang": "fr",
+  "background_color": "#f1f5f9",
+  "theme_color": "#2563eb",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
