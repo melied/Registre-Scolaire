@@ -5,6 +5,7 @@
 param([switch]$Silent)
 $ErrorActionPreference = 'Stop'
 $Repo = 'melied/Registre-Scolaire'
+$Token = ''  # PAT lecture seule si depot prive, sinon vide
 $RegKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\RegistreScolaire'
 try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 } catch {}
 
@@ -26,7 +27,9 @@ function Msg($ar, $fr) { Write-Host "$ar"; Write-Host "$fr" }
 try {
   Msg "== التحقق من التحديثات ==" "== Verification des mises a jour =="
   try {
-    $rel = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest" -TimeoutSec 25 -Headers @{Accept = 'application/vnd.github+json'; 'User-Agent' = 'RegistreScolaire-Updater' }
+    $H = @{Accept = 'application/vnd.github+json'; 'User-Agent' = 'RegistreScolaire-Updater' }
+    if ($Token) { $H['Authorization'] = 'Bearer ' + $Token }
+    $rel = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest" -TimeoutSec 25 -Headers $H
   } catch {
     $sc = 0
     try { $sc = [int]$_.Exception.Response.StatusCode } catch {}
